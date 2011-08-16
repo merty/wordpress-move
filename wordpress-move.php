@@ -160,8 +160,6 @@ if ( ! class_exists( 'WPMove' ) ) {
 										   'ftp_password'		=> '',
 										   'ftp_passive_mode'	=> 1,
 										   'ftp_remote_path'	=> '',
-										   'sec_allow_uploads'	=> 0,
-										   'sec_passcode'		=> '',
 										 );
 
 			// Try retrieving options from the database
@@ -193,6 +191,10 @@ if ( ! class_exists( 'WPMove' ) ) {
 			// If the form is submitted successfully...
 			if ( ! empty( $_POST ) && check_admin_referer( 'wpmove_update_settings' ) ) {
 
+				// If the user was redirected from the migration assistant, redirect him/her back once all necessary fields are filled
+				if ( isset( $_POST['wpmove_ref'] ) && $_POST['wpmove_ftp_hostname'] !== '' && $_POST['wpmove_ftp_username'] !== '' && $_POST['wpmove_ftp_port'] !== 0 )
+					echo '<meta http-equiv="refresh" content="' . esc_attr( '0;url=tools.php?page=wpmove&do=migrate' ) . '" />';
+
 			 	// Store the changes made...
 				$wpmove_options['db_chunk_size'] 	 = intval( $_POST['wpmove_db_chunk_size'] );
 				$wpmove_options['fs_chunk_size'] 	 = intval( $_POST['wpmove_fs_chunk_size'] );
@@ -202,8 +204,6 @@ if ( ! class_exists( 'WPMove' ) ) {
 				$wpmove_options['ftp_password']  	 = sanitize_text_field( $_POST['wpmove_ftp_password'] );
 				$wpmove_options['ftp_passive_mode']  = intval( $_POST['wpmove_ftp_passive_mode'] );
 				$wpmove_options['ftp_remote_path']	 = sanitize_text_field( $_POST['wpmove_ftp_remote_path'] );
-				$wpmove_options['sec_allow_uploads'] = intval( $_POST['wpmove_sec_allow_uploads'] );
-				$wpmove_options['sec_passcode']  	 = sanitize_text_field( $_POST['wpmove_sec_passcode'] );
 
 				// Update plugin settings
 				update_option( $this->admin_options_name, $wpmove_options );
@@ -212,17 +212,22 @@ if ( ! class_exists( 'WPMove' ) ) {
 				<div class="updated"><p><strong><?php _e( 'Settings saved.', 'WPMove' ); ?></strong></p></div>
 				<?php
 			}
+
+			// Tell the user to fill in the FTP details if he/she was redirected from the migration assistant
+			if ( isset( $_GET['ref'] ) || isset( $_POST['wpmove_ref'] ) )
+				echo '<div class="updated"><p><strong>' . __( 'Please fill in FTP Connection Details in order to start the migration process.', 'WPMove' ) . '</strong></p></div>';
+
 			?>
 			<div class="wrap">
 				<div id="icon-options-general" class="icon32">
 					<br>
 				</div>
-				<form method="post" action="<?php echo $_SERVER['REQUEST_URI']; ?>">
+				<h2><?php _e( 'WordPress Move Settings', 'WPMove' ); ?></h2>
+				<p>
+					<?php _e( 'Please configure the plugin using the settings below before starting to use the Migration Assistant under the Tools menu. If connecting to the remote server fails, please toggle the Passive Mode setting and try again.', 'WPMove' ); ?>
+				</p>
+				<form method="post" action="options-general.php?page=wpmove-settings">
 					<?php wp_nonce_field( 'wpmove_update_settings' ); ?>
-					<h2><?php _e( 'WordPress Move Settings', 'WPMove' ); ?></h2>
-					<p>
-						<?php _e( 'Please configure the plugin using the settings below before starting to use the Migration Assistant under the Tools menu. If connecting to the remote server fails, please toggle the Passive Mode setting and try again.', 'WPMove' ); ?>
-					</p>
 					<h3><?php _e( 'FTP Connection Details', 'WPMove' ); ?></h3>
 					<?php _e( 'These are the FTP connection details of your new server.', 'WPMove' ); ?>
 					<table class="form-table">
@@ -312,38 +317,17 @@ if ( ! class_exists( 'WPMove' ) ) {
 								</td>
 							</tr>
 						</tbody>
-					</table><br>
-					<h3><?php _e( 'Security Settings', 'WPMove' ); ?></h3>
-					<?php _e( 'These are the settings used to manage security measures.', 'WPMove' ); ?>
-					<table class="form-table">
-						<tbody>
-							<tr valign="top">
-								<th scope="row">
-									<label for="wpmove_sec_allow_uploads"><?php _e( 'Allow Uploads', 'WPMove' ); ?></label>
-								</th>
-								<td>
-									<label title="enabled">
-										<input type="radio" name="wpmove_sec_allow_uploads" value="1" <?php if ( $wpmove_options['sec_allow_uploads'] ) echo 'checked="checked"'; ?> />
-										<span style="font-size:11px;"><?php _e( 'Yes', 'WPMove' ); ?></span>
-									</label>
-									<br>
-									<label title="disabled">
-										<input type="radio" name="wpmove_sec_allow_uploads" value="0" <?php if ( ! $wpmove_options['sec_allow_uploads'] ) echo 'checked="checked"'; ?> />
-										<span style="font-size:11px;"><?php _e( 'No', 'WPMove' ); ?></span>
-									</label>
-								</td>
-							</tr>
-							<tr valign="top">
-								<th scope="row">
-									<label for="wpmove_sec_passcode"><?php _e( 'Passcode', 'WPMove' ); ?></label>
-								</th>
-								<td>
-									<input class="regular-text" id="wpmove_sec_passcode" name="wpmove_sec_passcode" type="password" value="<?php echo esc_attr( $wpmove_options['sec_passcode'] ); ?>" />
-								</td>
-							</tr>
-						</tbody>
 					</table>
-					<?php submit_button(); ?>
+					<?php
+
+					// Pass the refferer info with a hidden input field
+					if ( isset( $_GET['ref'] ) || isset( $_POST['wpmove_ref'] ) )
+						echo '<input id="wpmove_ref" name="wpmove_ref" type="hidden" />';
+
+					// Display the submit button
+					submit_button();
+
+					?>
 				</form>
 			</div>
 			<?php
@@ -382,16 +366,16 @@ if ( ! class_exists( 'WPMove' ) ) {
 				<table class="widefat" cellspacing="0">
 					<tbody>
 						<tr class="alternate">
-							<td class="row-title" style="width: 20%;">
-								<a href="<?php echo $_SERVER['REQUEST_URI']; ?>&do=domain"><?php _e( 'Change the current domain name', 'WPMove' ); ?></a>
+							<td class="row-title" style="width: 10%;">
+								<a href="<?php echo $_SERVER['REQUEST_URI']; ?>&do=domain"><?php _e( 'Change Domain Name', 'WPMove' ); ?></a>
 							</td>
 							<td class="desc">
-								<?php _e( 'By selecting this option, you will be able to replace all instances of your current domain name in the database with the new one you want to use from now on. Therefore you can change the domain name of your current installation by just typing in your new domain name and configuring your DNS servers.', 'WPMove' ); ?>
+								<?php _e( 'By selecting this option, you will be able to replace all instances of your current domain name in the database with the new one you want to use from now on. All you need to do is to type in your new domain name and configure your DNS servers.', 'WPMove' ); ?>
 							</td>
 						</tr>
 						<tr>
 							<td class="row-title">
-								<a href="<?php echo $_SERVER['REQUEST_URI']; ?>&do=migrate"><?php _e( 'Start migrating to another server', 'WPMove' ); ?></a>
+								<a href="<?php echo $_SERVER['REQUEST_URI']; ?>&do=migrate"><?php _e( 'Start Migration', 'WPMove' ); ?></a>
 							</td>
 							<td class="desc">
 								<?php _e( 'By selecting this option, you will be able to migrate your current installation either as is or partially to another server. Before proceeding, please make sure you have installed WordPress and WordPress Move on the remote server as well.', 'WPMove' ); ?>
@@ -399,7 +383,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 						</tr>
 						<tr class="alternate">
 							<td class="row-title">
-								<a href="<?php echo $_SERVER['REQUEST_URI']; ?>&do=complete"><?php _e( 'Complete migrating from another server', 'WPMove' ); ?></a>
+								<a href="<?php echo $_SERVER['REQUEST_URI']; ?>&do=complete"><?php _e( 'Complete Migration', 'WPMove' ); ?></a>
 							</td>
 							<td class="desc">
 								<?php _e( 'By selecting this option, you will be able to complete the migration process you have started from another server. Before proceeding, please make sure that the installation you want to migrate from has completed uploading backup files to this server successfully.', 'WPMove' ); ?>
@@ -434,14 +418,14 @@ if ( ! class_exists( 'WPMove' ) ) {
 				$db_backups = wpmove_create_db_backup( $wpmove_options['db_chunk_size'] );
 
 				// Create a backup of the database by changing instances of the old domain name with the newer one
-				$new_db_backups = wpmove_create_db_backup( $wpmove_options['db_chunk_size'], $old_domain_name, $new_domain_name );
+				$new_db_backups = wpmove_create_db_backup( $wpmove_options['db_chunk_size'], count( $db_backups ) + 1, $old_domain_name, $new_domain_name );
 
 				// Set error counter to zero
 				$errors_occured = 0;
 
 				// Import databsae backups we've just created
 				foreach ( $new_db_backups as $backup )
-					if ( ! wpmove_import_db_backup( $backup ) )
+					if ( TRUE !== wpmove_import_db_backup( $backup ) )
 						$errors_occured++;
 
 				// Delete backup files on success
@@ -483,7 +467,10 @@ if ( ! class_exists( 'WPMove' ) ) {
 
 						<?php
 
-						_e( 'An error occured while changing instances of your domain name. ', 'WPMove' );
+						_e( 'An error occured while changing instances of your domain name.', 'WPMove' );
+
+						// To seperate the next message from the previous one
+						echo ' ';
 
 						// Remove the database backup with replaced domain names
 						foreach ( $new_db_backups as $backup )
@@ -562,8 +549,16 @@ if ( ! class_exists( 'WPMove' ) ) {
 		 */
 		function print_start_migration_page() {
 
+			// Load plugin settings
+			$wpmove_options = $this->get_admin_options();
+
+			// If the FTP details are not on file, redirect the user to the settings page
+		 	if ( $wpmove_options['ftp_hostname'] == '' || $wpmove_options['ftp_username'] == '' || $wpmove_options['ftp_port'] == 0 ) {
+				echo '<meta http-equiv="refresh" content="0;url=options-general.php?page=wpmove-settings&ref=ma" />';
+			}
+
 			// Call the requested function
-			switch ( $_GET['type'] ) {
+			switch ( @$_GET['type'] ) {
 				case 'simple':		$this->print_simple_migration_page();
 									break;
 				case 'advanced':	$this->print_advanced_migration_page();
@@ -582,11 +577,11 @@ if ( ! class_exists( 'WPMove' ) ) {
 					<table class="widefat" cellspacing="0">
 						<tbody>
 							<tr class="alternate">
-								<td class="row-title">
+								<td class="row-title" style="width: 10%;">
 									<a href="<?php echo $_SERVER['REQUEST_URI']; ?>&type=simple"><?php _e( 'Simple Migration', 'WPMove' ); ?></a>
 								</td>
 								<td class="desc">
-									<?php _e( 'Simple Migration creates a backup of the database and also creates a backup of your entire installation excluding the plugin directory. It starts uploading backup files to the remote server once the backup files are created.', 'WPMove' ); ?>
+									<?php _e( 'Simple Migration creates a backup of your database and files excluding the plugin directory. Uploading backup files to the remote server starts once the backup files are created.', 'WPMove' ); ?>
 								</th>
 							</tr>
 							<tr>
@@ -594,7 +589,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 									<a href="<?php echo $_SERVER['REQUEST_URI']; ?>&type=advanced"><?php _e( 'Advanced Migration', 'WPMove' ); ?></a>
 								</td>
 								<td class="desc">
-									<?php _e( 'Advanced Migration creates a backup of the database but lets you select the files to backup. It starts uploading backup files to the remote server once the backup files are created.', 'WPMove' ); ?>
+									<?php _e( 'Advanced Migration creates a backup of the database but lets you select the files to backup. Uploading backup files to the remote server starts once the backup files are created.', 'WPMove' ); ?>
 								</td>
 							</tr>
 						</tbody>
@@ -637,7 +632,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 				 	$backups = array_merge( $backups, $db_backups );
 
 					// List all of the files inside the main directory
-					$abspath = $directory = substr( ABSPATH, 0, strlen( $directory ) - 1 );
+					$abspath = substr( ABSPATH, 0, strlen( ABSPATH ) - 1 );
 					$files = wpmove_list_all_files( $abspath, FALSE, array( WPMOVE_DIR, WPMOVE_BACKUP_DIR, WPMOVE_OLD_BACKUP_DIR ) );
 
 				 	// Create chunks from the selected files
@@ -650,27 +645,33 @@ if ( ! class_exists( 'WPMove' ) ) {
 				 	foreach ( $chunks as $chunk )
 				 		array_push( $backups, wpmove_create_archive( $chunk, ABSPATH, $chunk_id++ ) );
 
-					// Upload files to the new server and display a success message on success
-					if ( $this->upload_files( $backups ) ) {
+					// Check whether creating backups files succeeded or not
+				 	if ( ! file_exists( trailingslashit( WPMOVE_BACKUP_DIR ) . $backups['0'] ) ) {
+				 		_e( 'Could not create backup files. Please make sure the backup directory is writable. For further info, please refer to the documentation.', 'WPMove' );
+				 	} else {
 
-					?>
+						// Upload files to the new server and display a success message on success
+						if ( $this->upload_files( $backups ) ) {
+
+						?>
 						<br>
 						<?php _e( 'Creating and uploading backups have been completed. You can now go to your new installation and run the migration assistant in Complete Migration mode.', 'WPMove' ); ?>
 					</p>
 				</div>
-				<?php
+						<?php
 
-				} else {
+						} else {
 
-					// Display a failure message if the connection fails
-					?>
+						?>
 						<br>
 						<?php _e( 'Please check your FTP connection details on the settings page.', 'WPMove' ); ?>
-					</div>
-					<?php
+					</p>
+				</div>
+							<?php
 
-				}
-
+						}
+					}
+	
 			} else {
 			?>
 
@@ -680,7 +681,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 					</div>
 					<h2><?php _e( 'Simple Migration', 'WPMove' ); ?></h2>
 					<p>
-						<?php _e( 'This will backup your database and files as is and upload to the server you want to migrate to. Please make sure you have filled in FTP connection details in the settings page before proceeding.<br><br>', 'WPMove' ); ?>
+						<?php _e( 'This will backup your database and files as is and upload them to the server you want to migrate to.<br><br>', 'WPMove' ); ?>
 					</p>
 					<form method="post" action="<?php echo $_SERVER['REQUEST_URI']; ?>">
 						<?php
@@ -743,29 +744,31 @@ if ( ! class_exists( 'WPMove' ) ) {
 					 		array_push( $backups, wpmove_create_archive( $chunk, ABSPATH, $chunk_id++ ) );			 	
 					}
 
-					// Upload files and display a success message on success
-					if ( $this->upload_files( $backups ) ) {
+					// Check whether creating backups files succeeded or not
+				 	if ( ! file_exists( trailingslashit( WPMOVE_BACKUP_DIR ) . $backups['0'] ) ) {
+				 		_e( 'Could not create backup files. Please make sure the backup directory is writable. For further info, please refer to the documentation.', 'WPMove' );
+				 	} else {
+
+						// Upload files and display a success message on success
+						if ( $this->upload_files( $backups ) ) {
 
 						?>
 						<br>
 						<?php _e( 'Creating and uploading backups have been completed. You can now go to your new installation and run the migration assistant in Complete Migration mode.', 'WPMove' ); ?>
 					</p>
 				</div>
-
 						<?php
 
-					} else {
+						} else {
 
-						// Display a failure message if the connection fails
 						?>
-
 						<br>
 						<?php _e( 'Please check your FTP connection details on the settings page.', 'WPMove' ); ?>
 					</p>
 				</div>
+						<?php
 
-					<?php
-
+						}
 					}
 
 			} else {
@@ -793,8 +796,9 @@ if ( ! class_exists( 'WPMove' ) ) {
 								$i = 0;
 
 								// List all of the files inside the main directory
-								$abspath = substr( ABSPATH, 0, strlen( $directory ) - 1 );
+								$abspath = substr( ABSPATH, 0, strlen( ABSPATH ) - 1 );
 								$files = wpmove_generate_file_tree( $abspath, FALSE, array( WPMOVE_DIR, WPMOVE_BACKUP_DIR, WPMOVE_OLD_BACKUP_DIR ) );
+
 							?>
 							<div id="wpmove_file_tree" style="display:none;">
 								<ul>
@@ -809,6 +813,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 
 									// Prepare the file list
 									$files = wpmove_list_all_files( $abspath, FALSE, array( WPMOVE_DIR, WPMOVE_BACKUP_DIR, WPMOVE_OLD_BACKUP_DIR ) );
+
 									// Display each file with a checked checkbox
 									foreach ( $files as $file ) {
 									 	if ( is_file( $file ) ) {
@@ -833,7 +838,6 @@ if ( ! class_exists( 'WPMove' ) ) {
 		 * Handles uploading processes of the migration
 		 *
 		 * @param array $files Files to upload
-		 * @param string $directory The directory files are inside of (optional)
 		 * @return bool TRUE on success, FALSE on failure
 		 */
 		function upload_files( $files ) {

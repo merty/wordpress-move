@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WPMove\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-22 03:33+0200\n"
-"PO-Revision-Date: 2011-07-22 03:33+0200\n"
+"POT-Creation-Date: 2011-08-05 17:30+0200\n"
+"PO-Revision-Date: 2011-08-05 17:30+0200\n"
 "Last-Translator: Mert Yazicioglu <mert@mertyazicioglu.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -13,459 +13,462 @@ msgstr ""
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SearchPath-0: C:\\xampp\\htdocs\\wp\\wp-content\\plugins\\wordpress-move\n"
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:212
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:220
 msgid "Settings saved."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:222
-msgid "WordPress Move Settings"
-msgstr ""
-
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:224
-msgid "Please configure the plugin using the settings below before starting to use the Migration Assistant under the Tools menu. If connecting to the remote server fails, please toggle the Passive Mode setting and try again."
-msgstr ""
-
 #: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:226
-msgid "FTP Connection Details"
-msgstr ""
-
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:227
-msgid "These are the FTP connection details of your new server."
-msgstr ""
-
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:232
-msgid "Hostname"
+msgid "Please fill in FTP Connection Details in order to start the migration process."
 msgstr ""
 
 #: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:235
-msgid "The hostname you use to establish an FTP connection to the remote server. Might be an IP address or a domain name."
+msgid "WordPress Move Settings"
+msgstr ""
+
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:237
+msgid "Please configure the plugin using the settings below before starting to use the Migration Assistant under the Tools menu. If connecting to the remote server fails, please toggle the Passive Mode setting and try again."
+msgstr ""
+
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:239
+msgid "FTP Connection Details"
 msgstr ""
 
 #: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:240
-msgid "Port"
+msgid "These are the FTP connection details of your new server."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:243
-msgid "If you do not know what to write, it is most probably 21."
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:245
+msgid "Hostname"
 msgstr ""
 
 #: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:248
-msgid "Username"
+msgid "The hostname you use to establish an FTP connection to the remote server. Might be an IP address or a domain name."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:251
-msgid "The username you use to establish an FTP connection to the remote server."
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:253
+msgid "Port"
 msgstr ""
 
 #: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:256
-msgid "Password"
+msgid "If you do not know what to write, it is most probably 21."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:259
-msgid "The password you use to establish an FTP connection to the remote server."
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:261
+msgid "Username"
 msgstr ""
 
 #: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:264
-msgid "Remote Backup Path"
+msgid "The username you use to establish an FTP connection to the remote server."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:267
-msgid "Path from root to the backup directory of the WordPress Move plugin on the remote server. For instance:"
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:269
+msgid "Password"
 msgstr ""
 
 #: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:272
-msgid "Use Passive Mode"
+msgid "The password you use to establish an FTP connection to the remote server."
 msgstr ""
 
 #: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:277
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:327
+msgid "Remote Backup Path"
+msgstr ""
+
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:280
+msgid "Path from root to the backup directory of the WordPress Move plugin on the remote server. For instance:"
+msgstr ""
+
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:285
+msgid "Use Passive Mode"
+msgstr ""
+
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:290
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:340
 msgid "Yes"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:282
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:332
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:295
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:345
 msgid "No"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:288
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:301
 msgid "Database Backup Settings"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:289
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:302
 msgid "These are the settings used while creating database backups."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:294
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:308
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:307
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:321
 msgid "Chunk Size"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:297
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:310
 msgid "The size of each chunk of your database backup. Actual sizes of chunks may exceed this size limit on some occasions."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:302
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:315
 msgid "File Backup Settings"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:303
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:316
 msgid "These are the settings used while creating file backups."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:311
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:324
 msgid "The size of each chunk of your filesystem backup. Actual sizes of chunks may exceed this size limit on some occasions."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:316
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:329
 msgid "Security Settings"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:317
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:330
 msgid "These are the settings used to manage security measures."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:322
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:335
 msgid "Allow Uploads"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:338
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:351
 msgid "Passcode"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:378
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:578
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1453
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:402
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:610
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1493
 msgid "Migration Assistant"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:380
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:404
 msgid "Please make sure you have configured the plugin using the WordPress Move page under the Settings menu before selecting an action to proceed..."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:386
-msgid "Change the current domain name"
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:410
+msgid "Change Domain Name"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:389
-msgid "By selecting this option, you will be able to replace all instances of your current domain name in the database with the new one you want to use from now on. Therefore you can change the domain name of your current installation by just typing in your new domain name and configuring your DNS servers."
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:413
+msgid "By selecting this option, you will be able to replace all instances of your current domain name in the database with the new one you want to use from now on. All you need to do is to type in your new domain name and configure your DNS servers."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:394
-msgid "Start migrating to another server"
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:418
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:726
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:863
+msgid "Start Migration"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:397
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:421
 msgid "By selecting this option, you will be able to migrate your current installation either as is or partially to another server. Before proceeding, please make sure you have installed WordPress and WordPress Move on the remote server as well."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:402
-msgid "Complete migrating from another server"
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:426
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1143
+msgid "Complete Migration"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:405
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:429
 msgid "By selecting this option, you will be able to complete the migration process you have started from another server. Before proceeding, please make sure that the installation you want to migrate from has completed uploading backup files to this server successfully."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:465
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:861
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:872
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:954
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:968
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:489
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:901
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:912
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:994
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1008
 msgid "Success!"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:467
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:491
 msgid "Your domain name has been changed successfully."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:468
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:492
 #, php-format
 msgid "<a href=\"%s\">Click here</a> to go to your site using your new domain."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:481
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:505
 msgid "Failure!"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:486
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:510
 msgid "An error occured while changing instances of your domain name. "
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:501
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:525
 msgid "Changes on your domain has been rolled back automatically."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:505
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:529
 msgid "Rolling back to the previous state also failed. Please try importing the database backup stored under the backup folder manually."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:524
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:548
 msgid "Changing Domain Name"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:526
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:550
 msgid "Please enter exact paths to your WordPress installations on both domains without the trailing slash. After replacing instances of your old domain name in the database with the new one completes, please do not forget to update your nameservers."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:532
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:556
 msgid "Old Domain Name"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:540
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:564
 msgid "New Domain Name"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:549
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:573
 msgid "Change"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:580
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:612
 msgid "Please select a migration type to proceed..."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:586
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:624
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:681
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:618
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:656
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:719
 msgid "Simple Migration"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:589
-msgid "Simple Migration creates a backup of the database and also creates a backup of your entire installation excluding the plugin directory. It starts uploading backup files to the remote server once the backup files are created."
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:621
+msgid "Simple Migration creates a backup of your database and files excluding the plugin directory. Uploading backup files to the remote server starts once the backup files are created."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:594
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:712
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:779
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:626
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:750
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:819
 msgid "Advanced Migration"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:597
-msgid "Advanced Migration creates a backup of the database but lets you select the files to backup. It starts uploading backup files to the remote server once the backup files are created."
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:629
+msgid "Advanced Migration creates a backup of the database but lets you select the files to backup. Uploading backup files to the remote server starts once the backup files are created."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:658
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:751
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:687
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:786
+msgid "Could not create backup files. Please make sure the backup directory is writable. For further info, please refer to the documentation."
+msgstr ""
+
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:695
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:794
 msgid "Creating and uploading backups have been completed. You can now go to your new installation and run the migration assistant in Complete Migration mode."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:668
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:763
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:704
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:803
 msgid "Please check your FTP connection details on the settings page."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:683
-msgid "This will backup your database and files as is and upload to the server you want to migrate to. Please make sure you have filled in FTP connection details in the settings page before proceeding.<br><br>"
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:721
+msgid "This will backup your database and files as is and upload them to the server you want to migrate to.<br><br>"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:688
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:823
-msgid "Start Migration"
-msgstr ""
-
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:781
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:821
 msgid "Please select the files you want to include in the backup from the list below."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:786
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:826
 msgid "Select All"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:787
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:827
 msgid "Unselect All"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:805
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:845
 msgid "Loading..."
-msgstr ""
-
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:853
-#, php-format
-msgid "Connecting to %s:%d..."
-msgstr ""
-
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:865
-#, php-format
-msgid "Logging in as %s using password..."
-msgstr ""
-
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:867
-#, php-format
-msgid "Logging in as %s without a password..."
-msgstr ""
-
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:872
-msgid "Starting uploading files..."
-msgstr ""
-
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:882
-#, php-format
-msgid "%s is being uploaded..."
-msgstr ""
-
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:884
-msgid " Success!"
-msgstr ""
-
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:886
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:912
-msgid " Failed!"
 msgstr ""
 
 #: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:893
 #, php-format
-msgid "Uploading files is completed with %d error..."
+msgid "Connecting to %s:%d..."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:895
-msgid "Uploading files is completed without an error..."
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:905
+#, php-format
+msgid "Logging in as %s using password..."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:898
-msgid "Closing the FTP connection..."
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:907
+#, php-format
+msgid "Logging in as %s without a password..."
 msgstr ""
 
 #: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:912
+msgid "Starting uploading files..."
+msgstr ""
+
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:922
+#, php-format
+msgid "%s is being uploaded..."
+msgstr ""
+
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:924
+msgid " Success!"
+msgstr ""
+
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:926
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:952
+msgid " Failed!"
+msgstr ""
+
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:933
+#, php-format
+msgid "Uploading files is completed with %d error..."
+msgstr ""
+
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:935
+msgid "Uploading files is completed without an error..."
+msgstr ""
+
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:938
+msgid "Closing the FTP connection..."
+msgstr ""
+
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:952
 msgid "Operation terminated..."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:934
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:992
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:974
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1032
 msgid "Completing Migration"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:951
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:991
 #, php-format
 msgid "%s is being imported... "
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:957
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:971
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:997
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1011
 msgid "Failed!"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:965
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1005
 #, php-format
 msgid "%s is being extracted... "
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:979
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1019
 #, php-format
 msgid "Migration has been completed but with %d error."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:981
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1021
 msgid "Migration has been completed successfully!"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1006
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1046
 msgid "Proceeding will use the following files and database backups. You can choose which files to use by going to the Backup Manager."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1015
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1034
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1189
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1208
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1314
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1333
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1055
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1074
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1229
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1248
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1354
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1373
 msgid "Name"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1018
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1037
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1192
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1211
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1317
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1336
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1058
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1077
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1232
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1251
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1357
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1376
 msgid "Type"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1021
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1040
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1195
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1214
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1320
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1339
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1061
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1080
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1235
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1254
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1360
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1379
 msgid "Size"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1024
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1043
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1198
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1217
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1323
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1342
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1064
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1083
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1238
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1257
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1363
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1382
 msgid "Date Created"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1061
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1241
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1366
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1101
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1281
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1406
 msgid "Database Backup"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1064
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1244
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1369
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1104
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1284
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1409
 msgid "Filesystem Backup"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1103
-msgid "Complete Migration"
-msgstr ""
-
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1108
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1148
 msgid "There are no backup files to use to complete the migration. Please start the migration using WordPress Move on the server you want to migrate from."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1155
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1454
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1195
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1494
 msgid "Backup Manager"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1156
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1196
 msgid "Current Backups"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1158
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1198
 msgid "Below are the files stored under your backup directory. These files will be used if you choose to complete the migration."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1176
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1216
 msgid "Archive"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1177
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1302
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1217
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1342
 msgid "Delete"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1179
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1304
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1219
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1344
 msgid "Apply"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1283
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1408
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1323
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1448
 msgid "No backup files found."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1292
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1332
 msgid "Old Backups"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1294
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1334
 msgid "Below are the files stored under your old backup directory. These files will not be used while completing the migration unless you unarchive them."
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1301
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1341
 msgid "Unarchive"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1457
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1497
 msgid "Settings"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1457
+#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:1497
 msgid "WordPress Move"
 msgstr ""
 
