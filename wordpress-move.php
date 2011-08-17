@@ -725,7 +725,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 				 	$backups = array_merge( $backups, $db_backups );
 
 					// Check whether an array is actually posted or not
-					if ( is_array( $_POST['files'] ) ) {
+					if ( isset( $_POST['files'] ) && is_array( $_POST['files'] ) ) {
 
 				 	 	// Use the POST data directly, if the fallback method is being used
 				 	 	$files = array_map( 'sanitize_text_field', $_POST['files'] );
