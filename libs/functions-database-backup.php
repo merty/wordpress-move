@@ -3,7 +3,7 @@
  * WP Move Database Backup Functions
  *
  * @author Mert Yazicioglu
- * @date 2011-08-07 14:52:00 +03:00
+ * @date 2011-08-19 00:12:00 +03:00
  */
 
 /**
@@ -50,6 +50,15 @@ function wpmove_create_db_backup( $chunk_size = 0, $chunk_id = 1, $old_url = NUL
 
 		for ( $i = 0; $i < $cnt_fields; $i++ ) {
 
+			if ( $chunk_size > 0 && strlen( serialize( $queries ) ) > ( $chunk_size * 1024 * 1024 ) ) {
+				fwrite( $output, serialize( $queries ) );
+				fclose( $output );
+				$queries = array();
+				$filename = 'DBBackup-' . time() . $chunk_id++ . '.sql';
+				$output = fopen( trailingslashit( WPMOVE_BACKUP_DIR ) . $filename, 'w+' );
+				array_push( $filenames, $filename );
+			}
+
 			$query = "INSERT INTO " . $table . " VALUES( ";
 
 			$j = 0;
@@ -58,22 +67,15 @@ function wpmove_create_db_backup( $chunk_size = 0, $chunk_id = 1, $old_url = NUL
 
 			while ( isset( $row[$i][$j] ) ) {
 
-				if ( isset( $row[$i][$j] ) ) {
+			 	if ( is_int( $row[$i][$j] ) )
+				 	$query .= "%d, ";
+				else
+					$query .= "%s, ";   
 
-				 	if ( is_int( $row[$i][$j] ) )
-					 	$query .= "%d, ";
-					else
-						$query .= "%s, ";   
-
-					if ( $replacement_mode )
-						array_push( $values, wpmove_replace_url( $old_url, $new_url, $row[$i][$j] ) );
-					else
-						array_push( $values, $row[$i][$j] );
-
-				} else {
-				 	$query .= "%s, ";   
-					array_push( $values, "" );
-				}
+				if ( $replacement_mode )
+					array_push( $values, wpmove_replace_url( $old_url, $new_url, $row[$i][$j] ) );
+				else
+					array_push( $values, $row[$i][$j] );
 
 				$j++;
 			}
