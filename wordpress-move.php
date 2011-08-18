@@ -291,7 +291,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 						</tbody>
 					</table><br>
 					<h3><?php _e( 'Database Backup Settings', 'WPMove' ); ?></h3>
-					<?php _e( 'These are the settings used while creating database backups.', 'WPMove' ); ?>
+					<?php _e( 'The size of each chunk of your database backup. Actual sizes of chunks may exceed this size limit. 0 means unlimited.', 'WPMove' ); ?>
 					<table class="form-table">
 						<tbody>
 							<tr valign="top">
@@ -299,13 +299,13 @@ if ( ! class_exists( 'WPMove' ) ) {
 									<label for="wpmove_db_chunk_size"><?php _e( 'Chunk Size', 'WPMove' ); ?></label>
 								</th>
 								<td>
-									<input id="wpmove_db_chunk_size" name="wpmove_db_chunk_size" type="text" value="<?php echo esc_attr( $wpmove_options['db_chunk_size'] ); ?>" size="5" /> MB &nbsp;&nbsp;<i><?php _e( 'The size of each chunk of your database backup. Actual sizes of chunks may exceed this size limit on some occasions.', 'WPMove' ); ?></i>
+									<input id="wpmove_db_chunk_size" name="wpmove_db_chunk_size" type="text" value="<?php echo esc_attr( $wpmove_options['db_chunk_size'] ); ?>" size="5" /> MB
 								</td>
 							</tr>
 						</tbody>
 					</table><br>
 					<h3><?php _e( 'File Backup Settings', 'WPMove' ); ?></h3>
-					<?php _e( 'These are the settings used while creating file backups.', 'WPMove' ); ?>
+					<?php _e( 'The size of files to compress per filesystem backup chunk. Sizes of chunks will be less than or equal to this size limit, depending on the compression ratio. 0 means unlimited.', 'WPMove' ); ?>
 					<table class="form-table">
 						<tbody>
 							<tr valign="top">
@@ -313,7 +313,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 									<label for="wpmove_fs_chunk_size"><?php _e( 'Chunk Size', 'WPMove' ); ?></label>
 								</th>
 								<td>
-									<input id="wpmove_fs_chunk_size" name="wpmove_fs_chunk_size" type="text" value="<?php echo esc_attr( $wpmove_options['fs_chunk_size'] ); ?>" size="5" /> MB &nbsp;&nbsp;<i><?php _e( 'The size of each chunk of your filesystem backup. Actual sizes of chunks may exceed this size limit on some occasions.', 'WPMove' ); ?></i>
+									<input id="wpmove_fs_chunk_size" name="wpmove_fs_chunk_size" type="text" value="<?php echo esc_attr( $wpmove_options['fs_chunk_size'] ); ?>" size="5" /> MB
 								</td>
 							</tr>
 						</tbody>

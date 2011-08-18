@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WPMove\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-17 02:58+0200\n"
-"PO-Revision-Date: 2011-08-17 02:58+0200\n"
+"POT-Creation-Date: 2011-08-19 00:45+0200\n"
+"PO-Revision-Date: 2011-08-19 00:45+0200\n"
 "Last-Translator: Mert Yazicioglu <mert@mertyazicioglu.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -94,7 +94,7 @@ msgid "Database Backup Settings"
 msgstr ""
 
 #: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:294
-msgid "These are the settings used while creating database backups."
+msgid "The size of each chunk of your database backup. Actual sizes of chunks may exceed this size limit. 0 means unlimited."
 msgstr ""
 
 #: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:299
@@ -102,20 +102,12 @@ msgstr ""
 msgid "Chunk Size"
 msgstr ""
 
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:302
-msgid "The size of each chunk of your database backup. Actual sizes of chunks may exceed this size limit on some occasions."
-msgstr ""
-
 #: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:307
 msgid "File Backup Settings"
 msgstr ""
 
 #: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:308
-msgid "These are the settings used while creating file backups."
-msgstr ""
-
-#: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:316
-msgid "The size of each chunk of your filesystem backup. Actual sizes of chunks may exceed this size limit on some occasions."
+msgid "The size of files to compress per filesystem backup chunk. Sizes of chunks will be less than or equal to this size limit, depending on the compression ratio. 0 means unlimited."
 msgstr ""
 
 #: C:\xampp\htdocs\wp\wp-content\plugins\wordpress-move/wordpress-move.php:362
