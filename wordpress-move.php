@@ -88,34 +88,12 @@ if ( ! class_exists( 'WPMove' ) ) {
 						$( "#wpmove_file_tree_loading" ).css( 'display', 'none' );
 						$( "#wpmove_file_tree" ).css( 'display', 'block' );
 						$( "#wpmove_file_tree_buttons" ).css( 'display', 'block' );
-						$( "#wpmove_file_tree_check_all" ).click( function () {
-							$( "#wpmove_file_tree" ).jstree( "check_all" );
-						});
-						$( "#wpmove_file_tree_uncheck_all" ).click( function () {
-							$( "#wpmove_file_tree" ).jstree( "uncheck_all" );
-						});
+						$( "#wpmove_file_tree_check_all" ).click( function () {	$( "#wpmove_file_tree" ).jstree( "check_all" ); } );
+						$( "#wpmove_file_tree_uncheck_all" ).click( function () { $( "#wpmove_file_tree" ).jstree( "uncheck_all" );	} );
 					}).jstree( {
-					 	"themes" : {
-							"theme"	: "default",
-							"dots" : false
-						},
-						"types" : {
-							"valid_children" : [ "file" ],
-							"types" : {
-								"file" : {
-									"icon" : {
-										"image" : "<?php echo WPMOVE_URL; ?>/libs/js/themes/default/file.png"
-									}
-								}
-							}
-						},
-						"checkbox" : {
-							"real_checkboxes" : true,
-							"real_checkboxes_names" : function(n) {
-							 	
-								return [ "files[]", $( n[0] ).children( 'a' ).attr( 'title' ) ];
-							}
-						},
+					 	"themes" : { "dots" : false	},
+						"types" : {	"valid_children" : [ "file" ], "types" : { "file" : { "icon" : { "image" : "<?php echo WPMOVE_URL; ?>/libs/js/themes/default/file.png" } } } },
+						"checkbox" : { "real_checkboxes" : true, "real_checkboxes_names" : function(n) { return [ "files[]", $( n[0] ).children( 'a' ).attr( 'title' ) ]; }	},
 						"plugins" : [ "themes", "types", "checkbox", "html_data" ],
 					} );
 				} );
