@@ -1128,6 +1128,33 @@ if ( ! class_exists( 'WPMove' ) ) {
 						foreach ( $files as $file )
 							rename( $file, trailingslashit( $move_target ) . basename($file) );
 				}
+
+			} else if ( isset( $_GET['do'] ) && 'create' == $_GET['do'] ) {
+				
+				// Load plugin settings
+				$wpmove_options = $this->get_admin_options();
+
+				// An array to hold backup files that will be uploaded
+				$backups = array();
+
+				// Create a backup of the database
+				$db_backups = wpmove_create_db_backup( $wpmove_options['db_chunk_size'] );
+			 	$backups = array_merge( $backups, $db_backups );
+
+				// List all of the files inside the main directory
+				$abspath = substr( ABSPATH, 0, strlen( ABSPATH ) - 1 );
+				$files = wpmove_list_all_files( $abspath, FALSE, array( WPMOVE_DIR, WPMOVE_BACKUP_DIR, WPMOVE_OLD_BACKUP_DIR ) );
+
+			 	// Create chunks from the selected files
+			 	$chunks = wpmove_divide_into_chunks( $files, $wpmove_options['fs_chunk_size'] );
+
+			 	// To prevent overwriting archives created in the same second
+			 	$chunk_id = 1;
+
+			 	// Create an archive of the each chunk
+			 	foreach ( $chunks as $chunk )
+			 		array_push( $backups, wpmove_create_archive( $chunk, ABSPATH, $chunk_id++ ) );
+
 			}
 
 			?>
@@ -1135,7 +1162,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 				<div id="icon-tools" class="icon32">
 					<br>
 				</div>
-				<h2><?php _e( 'Backup Manager', 'WPMove' ); ?></h2>
+				<h2><?php _e( 'Backup Manager', 'WPMove' ); ?> <a class="add-new-h2" href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove-backup-manager&do=create' ) ); ?>" title="Create A Backup"><?php _e( 'Backup Now', 'WPMove' ); ?></a></h2>
 				<h3><?php _e( 'Current Backups', 'WPMove' ); ?></h3>
 				<p>
 					<?php _e( 'Below are the files stored under your backup directory. These files will be used if you choose to complete the migration.', 'WPMove' ) ?>
