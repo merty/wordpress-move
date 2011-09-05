@@ -85,6 +85,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 				jQuery( document ).ready( function( $ ) {
 					$( "#wpmove_change_domain_name" ).css( 'display', 'none' );
 					$( "#wpmove_change_domain_name_br" ).css( 'display', 'none' );
+					$( "#wpmove_toggle_change_domain_name" ).css( 'display', 'inline' );
 					$( "#wpmove_toggle_change_domain_name" ).click( function () {
 					 	if ( $( "#wpmove_change_domain_name" ).css( 'display' ) ==  "none" ) {
 							$( "#wpmove_change_domain_name" ).css( 'display', 'block' );
@@ -94,19 +95,21 @@ if ( ! class_exists( 'WPMove' ) ) {
 							$( "#wpmove_change_domain_name_br" ).css( 'display', 'none' );
 						}
 					} );
-				 	$( "#wpmove_file_tree_loading" ).css( 'display', 'block' );
-					$( "#wpmove_file_tree" ).bind( "loaded.jstree", function( event, data ) {
-						$( "#wpmove_file_tree_loading" ).css( 'display', 'none' );
-						$( "#wpmove_file_tree" ).css( 'display', 'block' );
-						$( "#wpmove_file_tree_buttons" ).css( 'display', 'block' );
-						$( "#wpmove_file_tree_check_all" ).click( function () {	$( "#wpmove_file_tree" ).jstree( "check_all" ); } );
-						$( "#wpmove_file_tree_uncheck_all" ).click( function () { $( "#wpmove_file_tree" ).jstree( "uncheck_all" );	} );
-					}).jstree( {
-					 	"themes" : { "dots" : false	},
-						"types" : {	"valid_children" : [ "file" ], "types" : { "file" : { "icon" : { "image" : "<?php echo WPMOVE_URL; ?>/libs/js/themes/default/file.png" } } } },
-						"checkbox" : { "real_checkboxes" : true, "real_checkboxes_names" : function(n) { return [ "files[]", $( n[0] ).children( 'a' ).attr( 'title' ) ]; }	},
-						"plugins" : [ "themes", "types", "checkbox", "html_data" ],
-					} );
+					if ( $( "#wpmove_file_tree" ).length ) {
+					 	$( "#wpmove_file_tree_loading" ).css( 'display', 'block' );
+						$( "#wpmove_file_tree" ).bind( "loaded.jstree", function( event, data ) {
+							$( "#wpmove_file_tree_loading" ).css( 'display', 'none' );
+							$( "#wpmove_file_tree" ).css( 'display', 'block' );
+							$( "#wpmove_file_tree_buttons" ).css( 'display', 'block' );
+							$( "#wpmove_file_tree_check_all" ).click( function () {	$( "#wpmove_file_tree" ).jstree( "check_all" ); } );
+							$( "#wpmove_file_tree_uncheck_all" ).click( function () { $( "#wpmove_file_tree" ).jstree( "uncheck_all" );	} );
+						}).jstree( {
+						 	"themes" : { "dots" : false	},
+							"types" : {	"valid_children" : [ "file" ], "types" : { "file" : { "icon" : { "image" : "<?php echo WPMOVE_URL; ?>/libs/js/themes/default/file.png" } } } },
+							"checkbox" : { "real_checkboxes" : true, "real_checkboxes_names" : function(n) { return [ "files[]", $( n[0] ).children( 'a' ).attr( 'title' ) ]; }	},
+							"plugins" : [ "themes", "types", "checkbox", "html_data" ],
+						} );
+					}
 				} );
 			</script>
 			<?php
@@ -691,7 +694,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 					<form method="post" action="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate&type=simple' ) ); ?>">
 						<div id="wpmove_change_domain_name">
 							<p>
-								<?php _e( 'Please enter exact paths to your WordPress installations on both domains without the trailing slash.', 'WPMove' ); ?><br>
+								<?php _e( 'Please enter the exact path to your WordPress installation on your new domain name without the trailing slash and then click Start Migration button to start the migration process.', 'WPMove' ); ?><br>
 							</p>
 							<table class="form-table">
 								<tbody>
@@ -719,7 +722,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 							wp_nonce_field( 'wpmove_simple_migration_start' );
 							submit_button( __( 'Start Migration', 'WPMove' ), 'primary', 'submit', FALSE );
 						?>
-							<input type="button" name="wpmove_toggle_change_domain_name" id="wpmove_toggle_change_domain_name" class="button-secondary" value="<?php _e( 'Change Domain Name', 'WPMove' ); ?>" />
+							<input type="button" name="wpmove_toggle_change_domain_name" id="wpmove_toggle_change_domain_name" class="button-secondary" value="<?php _e( 'Change Domain Name', 'WPMove' ); ?>" style="display:none;" />
 					</form>
 				</div>
 
@@ -834,7 +837,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 					<form method="post" action="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate&type=advanced' ) ); ?>">
 						<div id="wpmove_change_domain_name">
 							<p>
-								<?php _e( 'Please enter exact paths to your WordPress installations on both domains without the trailing slash.', 'WPMove' ); ?><br>
+								<?php _e( 'Please enter the exact path to your WordPress installation on your new domain name without the trailing slash and then click Start Migration button to start the migration process.', 'WPMove' ); ?><br>
 							</p>
 							<table class="form-table">
 								<tbody>
@@ -862,7 +865,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 						<div id="wpmove_file_tree_buttons" style="display: none;">
 							<input type="button" name="wpmove_file_tree_check_all" id="wpmove_file_tree_check_all" class="button-secondary" value="<?php _e( 'Select All', 'WPMove' ); ?>" />
 							<input type="button" name="wpmove_file_tree_uncheck_all" id="wpmove_file_tree_uncheck_all" class="button-secondary" value="<?php _e( 'Unselect All', 'WPMove' ); ?>" />
-							<input type="button" name="wpmove_toggle_change_domain_name" id="wpmove_toggle_change_domain_name" class="button-secondary" value="<?php _e( 'Change Domain Name', 'WPMove' ); ?>" />
+							<input type="button" name="wpmove_toggle_change_domain_name" id="wpmove_toggle_change_domain_name" class="button-secondary" value="<?php _e( 'Change Domain Name', 'WPMove' ); ?>" style="display:none;" />
 						</div>
 						<blockquote>
 							<?php
