@@ -79,6 +79,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 		 * @return void
 		 */
 		function add_migration_assistant_js() {
+
 			?>
 			<script type="text/javascript"> 
 				jQuery( document ).ready( function( $ ) {
@@ -112,20 +113,21 @@ if ( ! class_exists( 'WPMove' ) ) {
 				} );
 			</script>
 			<?php
+
 		}
 
 		/**
-		 * Loads the JS file for Advanced Migration.
+		 * Loads the JS file for Migration Assistant.
 		 *
 		 * @param void
 		 * @return void
 		 */
-		function load_advanced_migration_scripts() {
+		function load_migration_assistant_scripts() {
 			wp_enqueue_script( 'file_tree', '/wp-content/plugins/wordpress-move/libs/js/jquery.jstree.js', array( 'jquery' ) );
 		}
 
 		/**
-		 * Adds the script to the head for settings page.
+		 * Adds the script to the head of the settings page.
 		 *
 		 * @param void
 		 * @return void
@@ -142,17 +144,19 @@ if ( ! class_exists( 'WPMove' ) ) {
 		}
 
 		/**
-		 * Loads the JS file for settings page.
+		 * Loads JS files for the settings page.
 		 *
 		 * @param void
 		 * @return void
 		 */
 		function load_settings_page_scripts() {
-			
+
+			// Load scripts needed for meta boxes
 			wp_enqueue_script( 'common' );
 			wp_enqueue_script( 'wp-lists' );
 			wp_enqueue_script( 'postbox' );
 
+			// Add meta boxes to queue
 			add_meta_box( 'wpmove-ftp-connection-details', __( 'FTP Connection Details', 'WPMove' ), array( $this, 'metabox_ftp_connection_details' ), 'wpmove-settings' );
 			add_meta_box( 'wpmove-db-backup-settings', __( 'Database Backup Settings', 'WPMove' ), array( $this, 'metabox_db_backup_settings' ), 'wpmove-settings' );
 			add_meta_box( 'wpmove-fs-backup-settings', __( 'File Backup Settings', 'WPMove' ), array( $this, 'metabox_fs_backup_settings' ), 'wpmove-settings' );
@@ -255,7 +259,10 @@ if ( ! class_exists( 'WPMove' ) ) {
 				<form method="post" action="options-general.php?page=wpmove-settings">
 					<?php
 
+						// To make sure the form is submitted via ACP.
 						wp_nonce_field( 'wpmove_update_settings' );
+
+						// Needed to be able to toggle meta boxes
 						wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false );
 						wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false );
 					
@@ -278,6 +285,12 @@ if ( ! class_exists( 'WPMove' ) ) {
 			<?php
 		}
 
+		/**
+		 * Callback function for the FTP Connection Details meta box.
+		 *
+		 * @param void
+		 * @return void
+		 */
 		function metabox_ftp_connection_details( $wpmove_options ) {
 
 			?>
@@ -348,6 +361,12 @@ if ( ! class_exists( 'WPMove' ) ) {
 
 		}
 
+		/**
+		 * Callback function for the Database Backup Settings meta box.
+		 *
+		 * @param void
+		 * @return void
+		 */
 		function metabox_db_backup_settings( $wpmove_options ) {
 			
 			?>
@@ -370,6 +389,12 @@ if ( ! class_exists( 'WPMove' ) ) {
 
 		}
 
+		/**
+		 * Callback function for the File Backup Settings meta box.
+		 *
+		 * @param void
+		 * @return void
+		 */
 		function metabox_fs_backup_settings( $wpmove_options ) {
 
 			?>
@@ -523,7 +548,6 @@ if ( ! class_exists( 'WPMove' ) ) {
 						</div>
 						<h2><?php _e( 'Failure!', 'WPMove' ); ?></h2>
 						<p>
-
 						<?php
 
 						_e( 'An error occured while changing instances of your domain name.', 'WPMove' );
@@ -552,7 +576,6 @@ if ( ! class_exists( 'WPMove' ) ) {
 						}
 
 						?>
-
 						</p>
 					</div>
 				<?php
@@ -671,7 +694,6 @@ if ( ! class_exists( 'WPMove' ) ) {
 			if ( $_POST && check_admin_referer( 'wpmove_simple_migration_start' ) ) {
 
 			?>
-
 				<div class="wrap">
 					<div id="icon-tools" class="icon32">
 						<br>
@@ -742,14 +764,13 @@ if ( ! class_exists( 'WPMove' ) ) {
 						<?php _e( 'Please check your FTP connection details on the settings page.', 'WPMove' ); ?>
 					</p>
 				</div>
-							<?php
+						<?php
 
 						}
 					}
 	
 			} else {
 			?>
-
 				<div class="wrap">
 					<div id="icon-tools" class="icon32">
 						<br>
@@ -792,7 +813,6 @@ if ( ! class_exists( 'WPMove' ) ) {
 							<input type="button" name="wpmove_toggle_change_domain_name" id="wpmove_toggle_change_domain_name" class="button-secondary" value="<?php _e( 'Change Domain Name', 'WPMove' ); ?>" style="display:none;" />
 					</form>
 				</div>
-
 			<?php
 			}
 		}
@@ -892,7 +912,6 @@ if ( ! class_exists( 'WPMove' ) ) {
 			} else {
 
 				?>
-
 				<div class="wrap">
 					<div id="icon-tools" class="icon32">
 						<br>
@@ -974,7 +993,6 @@ if ( ! class_exists( 'WPMove' ) ) {
 					</form>
 					<br>
 				</div>
-
 			<?php
 			}
 		}
@@ -1128,11 +1146,11 @@ if ( ! class_exists( 'WPMove' ) ) {
 							printf( _n( 'Migration has been completed but with %d error.', 'Migration has been completed but with %d errors.', $errors_occured, 'WPMove' ), $errors_occured );
 						else
 							_e( 'Migration has been completed successfully!', 'WPMove' );
+
 					?>
 				</div>
 			<?php
-			}
-			else {
+			} else {
 			?>
 				<div class="wrap">
 					<div id="icon-tools" class="icon32">
@@ -1243,6 +1261,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 										// Increase the counter for zebra striping
 										$i++;
 									}
+
 								?>
 							</tbody>
 						</table>
@@ -1633,7 +1652,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 		 	$s = add_options_page( __( 'Settings', 'WPMove' ), __( 'WordPress Move', 'WPMove' ), 'manage_options', 'wpmove-settings', array( &$this, 'print_settings_page' ) );
 
 			// Add styles and scripts for Advanced Migration to the queue
-			add_action( 'admin_print_scripts-' . $ma, array( $this, 'load_advanced_migration_scripts' ) );
+			add_action( 'admin_print_scripts-' . $ma, array( $this, 'load_migration_assistant_scripts' ) );
 			add_action( 'admin_head-' . $ma, array( $this, 'add_migration_assistant_js' ) );
 			add_action( 'admin_head-' . $s, array( $this, 'add_settings_page_js' ) );
 			add_action( 'load-' . $s, array( $this, 'load_settings_page_scripts' ) );
@@ -1643,9 +1662,8 @@ if ( ! class_exists( 'WPMove' ) ) {
 }
 
 // Instantiate the WPMove class if it doesn't exist.
-if ( class_exists( 'WPMove' ) ) {
+if ( class_exists( 'WPMove' ) )
 	$wpm = new WPMove();
-}
 
 // If there's an instance of the class available...
 if ( isset( $wpm ) ) {
@@ -1658,5 +1676,6 @@ if ( isset( $wpm ) ) {
 
 	// Hook language file loader to WP init
 	add_action( 'init', array( &$wpm, 'load_language_file' ) );
+
 }
 ?>
