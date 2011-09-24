@@ -512,12 +512,14 @@ if ( ! class_exists( 'WPMove' ) ) {
 					if ( TRUE !== wpmove_import_db_backup( $backup ) )
 						$errors_occured++;
 
-				// Delete backup files on success
+				// If everything went well...
 				if ( ! $errors_occured ) {
 
+					// Move the backup files we created "just in case" to the old backup directory
 					foreach ( $db_backups as $backup )
-						wpmove_remove_db_backup( $backup );
+						rename( trailingslashit( WPMOVE_BACKUP_DIR ) . $backup, trailingslashit( WPMOVE_OLD_BACKUP_DIR ) . $backup );
 
+					// Remove the backup files we've just imported as we won't need them anymore
 					foreach ( $new_db_backups as $backup )
 						wpmove_remove_db_backup( $backup );
 
@@ -567,12 +569,19 @@ if ( ! class_exists( 'WPMove' ) ) {
 							if ( ! wpmove_import_db_backup( $backup ) )
 								$errors_occured++;
 
+						// If rolling back succeeds...
 						if ( ! $errors_occured ) {
+
 							_e( 'Changes on your domain has been rolled back automatically.', 'WPMove' );
+
+							// Move the backup files we created "just in case" to the old backup directory, again, just in case
 							foreach ( $db_backups as $backup )
-								wpmove_remove_db_backup( $backup );
+								rename( trailingslashit( WPMOVE_BACKUP_DIR ) . $backup, trailingslashit( WPMOVE_OLD_BACKUP_DIR ) . $backup );
+
 						} else {
+
 							_e( 'Rolling back to the previous state also failed. Please try importing the database backup stored under the backup folder manually.', 'WPMove' );
+
 						}
 
 						?>
@@ -1106,7 +1115,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 						$files = wpmove_list_all_files( WPMOVE_BACKUP_DIR, TRUE );
 
 						// Categorize the files listed
-						$backups = $this->categorize_files($files);
+						$backups = $this->categorize_files( $files );
 
 						// Set the error counter to zero
 						$errors_occured = 0;
@@ -1299,7 +1308,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 					$move_target = WPMOVE_BACKUP_DIR;
 
 				// If there's an actual array sent
-				if ( is_array( $_POST['files'] ) ) {
+				if ( isset( $_POST['files'] ) && is_array( $_POST['files'] ) ) {
 
 					// Sanitize the POST data
 					$files = array_map( 'sanitize_text_field', $_POST['files'] );
@@ -1311,7 +1320,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 							unlink( $file );
 					else if ( 'toggle' == $action )
 						foreach ( $files as $file )
-							rename( $file, trailingslashit( $move_target ) . basename($file) );
+							rename( $file, trailingslashit( $move_target ) . basename( $file ) );
 				}
 
 			} else if ( isset( $_GET['do'] ) && 'create' == $_GET['do'] ) {
