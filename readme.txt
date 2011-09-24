@@ -4,7 +4,7 @@ Donate link: http://www.mertyazicioglu.com
 Tags: domain, migrate, migration, move
 Requires at least: 3.2
 Tested up to: 3.2.1
-Stable tag: 1.1
+Stable tag: 1.1.1
 
 A migration assistant for WordPress capable of changing the domain name in use and/or migrating your installation to another server.
 
@@ -49,6 +49,12 @@ As the warning suggests, you need to make the backup directory writable by the p
 
 == Changelog ==
 
+= 1.1.1 =
+* Transients are no longer included in database backups to reduce the database backup files' sizes.
+* Backup files created before changing the domain name are now being stored under the old backup directory for a possible future need.
+* Fixed the PHP Catchable Fatal Error some people encounter.
+* Added meta boxes to the settings page.
+
 = 1.1 =
 * Added "Backup Now" functionality to Backup Manager.
 * Added the capability of migrating and changing the domain name at the same time.
@@ -57,6 +63,9 @@ As the warning suggests, you need to make the backup directory writable by the p
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.1.1 =
+Database backup files will be smaller now as transients will not be included in database backup files. Backup files created before changing the domain name are now being stored under the old backup directory for a possible future need. A small bug is fixed and meta boxes are added to the settings page of the plugin.
 
 = 1.1 =
 You can now create a full backup of your installation using the Backup Now button on the Backup Manager page. Also, migrating and changing the domain name at the same time is now supported.
