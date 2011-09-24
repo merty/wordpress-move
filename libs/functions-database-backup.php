@@ -67,6 +67,9 @@ function wpmove_create_db_backup( $chunk_size = 0, $chunk_id = 1, $old_url = NUL
 
 			while ( isset( $row[$i][$j] ) ) {
 
+				if ( strstr( $row[$i][$j], '_site_transient_' ) || strstr( $row[$i][$j], '_transient_' ) )
+					continue 2;
+
 			 	if ( is_int( $row[$i][$j] ) )
 				 	$query .= "%d, ";
 				else
