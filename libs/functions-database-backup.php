@@ -113,8 +113,11 @@ function wpmove_import_db_backup( $filename ) {
 
 	$queries = unserialize( $sql );
 
-	foreach ( $queries as $query )
-		$wpdb->query( $query );
+	if ( is_array( $queries ) )
+		foreach ( $queries as $query )
+			$wpdb->query( $query );
+	else
+		return FALSE;
 
 	return TRUE;
 }
