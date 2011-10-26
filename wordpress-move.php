@@ -83,6 +83,8 @@ if ( ! class_exists( 'WPMove' ) ) {
 			?>
 			<script type="text/javascript"> 
 				jQuery( document ).ready( function( $ ) {
+					$( "#wpmove-ma-domain-desc" ).css( 'min-height', $( "#wpmove-ma-migrate-desc" ).css( 'height' ) );
+					$( "#wpmove-ma-restore-desc" ).css( 'min-height', $( "#wpmove-ma-migrate-desc" ).css( 'height' ) );
 					$( "#wpmove_change_domain_name" ).css( 'display', 'none' );
 					$( "#wpmove_change_domain_name_br" ).css( 'display', 'none' );
 					$( "#wpmove_toggle_change_domain_name" ).css( 'display', 'inline' );
@@ -110,6 +112,10 @@ if ( ! class_exists( 'WPMove' ) ) {
 							"plugins" : [ "themes", "types", "checkbox", "html_data" ],
 						} );
 					}
+					$( '.if-js-closed' ).removeClass( 'if-js-closed' ).addClass( 'closed' );
+					postboxes.add_postbox_toggles( 'wpmove-domain' );
+					postboxes.add_postbox_toggles( 'wpmove-migrate' );
+					postboxes.add_postbox_toggles( 'wpmove-restore' );
 				} );
 			</script>
 			<?php
@@ -123,7 +129,18 @@ if ( ! class_exists( 'WPMove' ) ) {
 		 * @return void
 		 */
 		function load_migration_assistant_scripts() {
+
 			wp_enqueue_script( 'file_tree', '/wp-content/plugins/wordpress-move/libs/js/jquery.jstree.js', array( 'jquery' ) );
+
+			// Load scripts needed for meta boxes
+			wp_enqueue_script( 'common' );
+			wp_enqueue_script( 'wp-lists' );
+			wp_enqueue_script( 'postbox' );
+
+			// Add meta boxes to queue
+			add_meta_box( 'wpmove-ma-domain', __( 'Change Domain Name', 'WPMove' ), array( $this, 'metabox_ma_domain' ), 'wpmove-domain' );
+			add_meta_box( 'wpmove-ma-migrate', __( 'Migrate', 'WPMove' ), array( $this, 'metabox_ma_migrate' ), 'wpmove-migrate' );
+			add_meta_box( 'wpmove-ma-restore', __( 'Restore', 'WPMove' ), array( $this, 'metabox_ma_restore' ), 'wpmove-restore' );
 		}
 
 		/**
@@ -136,7 +153,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 			?>
 			<script type="text/javascript"> 
 				jQuery( document ).ready( function( $ ) {
-					jQuery( '.if-js-closed' ).removeClass( 'if-js-closed' ).addClass( 'closed' );
+					$( '.if-js-closed' ).removeClass( 'if-js-closed' ).addClass( 'closed' );
 					postboxes.add_postbox_toggles( 'wpmove-settings' );
 				} );
 			</script>
@@ -288,7 +305,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 		/**
 		 * Callback function for the FTP Connection Details meta box.
 		 *
-		 * @param void
+		 * @param $wpmove_options Plugin settings array
 		 * @return void
 		 */
 		function metabox_ftp_connection_details( $wpmove_options ) {
@@ -364,7 +381,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 		/**
 		 * Callback function for the Database Backup Settings meta box.
 		 *
-		 * @param void
+		 * @param $wpmove_options Plugin settings array
 		 * @return void
 		 */
 		function metabox_db_backup_settings( $wpmove_options ) {
@@ -392,7 +409,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 		/**
 		 * Callback function for the File Backup Settings meta box.
 		 *
-		 * @param void
+		 * @param $wpmove_options Plugin settings array
 		 * @return void
 		 */
 		function metabox_fs_backup_settings( $wpmove_options ) {
@@ -445,39 +462,153 @@ if ( ! class_exists( 'WPMove' ) ) {
 				</div>
 				<h2><?php _e( 'Migration Assistant', 'WPMove' ); ?></h2>
 				<p>
-					<?php _e( 'Please make sure you have configured the plugin using the WordPress Move page under the Settings menu before selecting an action to proceed...', 'WPMove' ); ?>
+					<?php _e( 'Please make sure you read the documentation carefully, before selecting an action to proceed...', 'WPMove' ); ?>
 				</p>
-				<table class="widefat" cellspacing="0">
-					<tbody>
-						<tr class="alternate">
-							<td class="row-title" style="width: 10%;">
-								<a href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=domain' ) ); ?>"><?php _e( 'Change Domain Name', 'WPMove' ); ?></a>
-							</td>
-							<td class="desc">
-								<?php _e( 'By selecting this option, you will be able to replace all instances of your current domain name in the database with the new one you want to use from now on. All you need to do is to type in your new domain name and configure your DNS servers.', 'WPMove' ); ?>
-							</td>
-						</tr>
-						<tr>
-							<td class="row-title">
-								<a href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate' ) ); ?>"><?php _e( 'Start Migration', 'WPMove' ); ?></a>
-							</td>
-							<td class="desc">
-								<?php _e( 'By selecting this option, you will be able to migrate your current installation either as is or partially to another server. Before proceeding, please make sure you have installed WordPress and WordPress Move on the remote server as well.', 'WPMove' ); ?>
-							</td>
-						</tr>
-						<tr class="alternate">
-							<td class="row-title">
-								<a href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=complete' ) ); ?>"><?php _e( 'Complete Migration', 'WPMove' ); ?></a>
-							</td>
-							<td class="desc">
-								<?php _e( 'By selecting this option, you will be able to complete the migration process you have started from another server. Before proceeding, please make sure that the installation you want to migrate from has completed uploading backup files to this server successfully.', 'WPMove' ); ?>
-							</td>
-						</tr>
-					</tbody>
-				</table>
+				<?php
+
+					// Needed to be able to toggle meta boxes
+					wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false );
+					wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false );
+
+				?>
+				<div id="poststuff" class="metabox-holder">
+					<div id="post-body" style="clear:left;display:block;float:left;position:relative;width:32%;">
+						<div id="post-body-content">
+							<?php do_meta_boxes( 'wpmove-domain', 'advanced', null ); ?>
+						</div>
+					</div>
+					<div id="post-body" style="clear:right;display:block;float:right;position:relative;width:32%;">
+						<div id="post-body-content">
+							<?php do_meta_boxes( 'wpmove-restore', 'advanced', null ); ?>
+						</div>
+					</div>
+					<div id="post-body" style="margin-left:34%;width:32%;">
+						<div id="post-body-content">
+							<?php do_meta_boxes( 'wpmove-migrate', 'advanced', null ); ?>
+						</div>
+					</div>
+				</div>
 			</div>
 			<?php
 			}
+		}
+
+		/**
+		 * Callback function for the Change Domain Name meta box.
+		 *
+		 * @param void
+		 * @return void
+		 */
+		function metabox_ma_domain() {
+			
+			?>
+			<div id="domain">
+				<div id="wpmove-ma-domain-desc">
+					<p>
+						<strong><?php _e( 'If you wish to do the following...', 'WPMove' ); ?></strong>
+					</p>
+					<p>
+						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'Use different domain name for this installation while staying on this server.', 'WPMove' ); ?><br>
+					</p>
+					<p>
+						<strong><?php _e( 'Do not forget that...', 'WPMove' ); ?></strong>
+					</p>
+					<p>
+						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'Your files and database will not be transfered to another server.', 'WPMove' ); ?><br>
+						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'Only instances of your old domain name in the database will be replaced.', 'WPMove' ); ?><br>
+						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'You need to manually configure your server and new domain name to use it on this server.', 'WPMove' ); ?><br>
+						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'A backup of your database will be made available under the backup directory.', 'WPMove' ); ?><br>
+						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'Creating a manual backup of your database is still highly encouraged.', 'WPMove' ); ?><br>
+					</p>
+					<br>
+				</div>
+				<div id="wpmove-ma-domain-button" align="center">
+					<a class="button-primary" href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=domain' ) ); ?>"><?php _e( 'Begin', 'WPMove' ); ?></a>
+				</div>
+			</div>
+			<?php
+		}
+
+		/**
+		 * Callback function for the Migrate meta box.
+		 *
+		 * @param void
+		 * @return void
+		 */
+		function metabox_ma_migrate() {
+			
+			?>
+			<div id="migrate">
+				<div id="wpmove-ma-migrate-desc">
+					<p>
+						<strong><?php _e( 'If you wish to do one or more of the following...', 'WPMove' ); ?></strong>
+					</p>
+					<p>
+						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'Transfer your database to another server.	', 'WPMove' ); ?><br>
+						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'Transfer some/all of your files to another server.', 'WPMove' ); ?><br>
+						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'Use a different domain name on the target server.', 'WPMove' ); ?><br>
+					</p>
+					<p>
+						<strong><?php _e( 'Make sure that...', 'WPMove' ); ?></strong>
+					</p>
+					<p>
+						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'WordPress and WordPress Move are installed on the target server.', 'WPMove' ); ?><br>
+					</p>
+					<p>
+						<strong><?php _e( 'Do not forget that...', 'WPMove' ); ?></strong>
+					</p>
+					<p>
+						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'This installation will stay as-is after the operation.', 'WPMove' ); ?><br>
+						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'You need to configure the plugin using the WordPress Move page under the Settings menu.', 'WPMove' ); ?><br>
+						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'You need to manually configure your existing domain to use it on the target server.', 'WPMove' ); ?><br>
+					</p>
+					<br>
+				</div>
+				<div id="wpmove-ma-migrate-button" align="center">
+					<a class="button-primary" href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate' ) ); ?>"><?php _e( 'Begin', 'WPMove' ); ?></a>
+				</div>
+			</div>
+			<?php
+		}
+
+		/**
+		 * Callback function for the Restore meta box.
+		 *
+		 * @param void
+		 * @return void
+		 */
+		function metabox_ma_restore() {
+			
+			?>
+			<div id="restore">
+				<div id="wpmove-ma-restore-desc">
+					<p>
+						<strong><?php _e( 'If you wish to do one or more of the following...', 'WPMove' ); ?></strong>
+					</p>
+					<p>
+						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'Complete migrating to this server.', 'WPMove' ); ?><br>
+						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'Restore backup files listed under the Current Backups section of the Backup Manager.', 'WPMove' ); ?><br>
+					</p>
+					<p>
+						<strong><?php _e( 'Make sure that...', 'WPMove' ); ?></strong>
+					</p>
+					<p>
+						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'You have backup files to use for this process under the backup directory.', 'WPMove' ); ?><br>
+					</p>
+					<p>
+						<strong><?php _e( 'Do not forget that...', 'WPMove' ); ?></strong>
+					</p>
+					<p>
+						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'You can select which files to use in this method by visiting the Backup Manager.', 'WPMove' ); ?><br>
+						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'Backups will be processed starting from old to new.', 'WPMove' ); ?><br>
+					</p>
+					<br>
+				</div>
+				<div id="wpmove-ma-restore-button" align="center">
+					<a class="button-primary" href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=complete' ) ); ?>"><?php _e( 'Begin', 'WPMove' ); ?></a>
+				</div>
+			</div>
+			<?php
 		}
 
 		/**
@@ -1299,7 +1430,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 		 */
 		function print_backup_manager_page() {
 
-			if ( $_POST && check_admin_referer( 'wpmove_backup_manager_submit' ) ) {
+			if ( $_POST && 'manage' == $_POST['act'] && check_admin_referer( 'wpmove_backup_manager_submit' ) ) {
 
 			 	// Set the appropriate target directory depending on the form submitted
 				if ( isset( $_POST['wpmove_current_backups'] ) )
@@ -1323,7 +1454,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 							rename( $file, trailingslashit( $move_target ) . basename( $file ) );
 				}
 
-			} else if ( isset( $_GET['do'] ) && 'create' == $_GET['do'] ) {
+			} else if ( $_POST && 'create' == $_POST['act'] && check_admin_referer( 'wpmove_backup_manager_create_backup' ) ) {
 				
 				// Load plugin settings
 				$wpmove_options = $this->get_admin_options();
@@ -1332,22 +1463,25 @@ if ( ! class_exists( 'WPMove' ) ) {
 				$backups = array();
 
 				// Create a backup of the database
-				$db_backups = wpmove_create_db_backup( $wpmove_options['db_chunk_size'] );
-			 	$backups = array_merge( $backups, $db_backups );
+				wpmove_create_db_backup( $wpmove_options['db_chunk_size'] );
 
-				// List all of the files inside the main directory
-				$abspath = substr( ABSPATH, 0, strlen( ABSPATH ) - 1 );
-				$files = wpmove_list_all_files( $abspath, FALSE, array( WPMOVE_DIR, WPMOVE_BACKUP_DIR, WPMOVE_OLD_BACKUP_DIR ) );
+				if ( isset( $_POST['wpmove_create_full_backup'] ) ) {
 
-			 	// Create chunks from the selected files
-			 	$chunks = wpmove_divide_into_chunks( $files, $wpmove_options['fs_chunk_size'] );
+					// List all of the files inside the main directory
+					$abspath = substr( ABSPATH, 0, strlen( ABSPATH ) - 1 );
+					$files = wpmove_list_all_files( $abspath, FALSE, array( WPMOVE_DIR, WPMOVE_BACKUP_DIR, WPMOVE_OLD_BACKUP_DIR ) );
 
-			 	// To prevent overwriting archives created in the same second
-			 	$chunk_id = 1;
+				 	// Create chunks from the selected files
+				 	$chunks = wpmove_divide_into_chunks( $files, $wpmove_options['fs_chunk_size'] );
 
-			 	// Create an archive of the each chunk
-			 	foreach ( $chunks as $chunk )
-			 		array_push( $backups, wpmove_create_archive( $chunk, ABSPATH, $chunk_id++ ) );
+				 	// To prevent overwriting archives created in the same second
+				 	$chunk_id = 1;
+
+				 	// Create an archive of the each chunk
+				 	foreach ( $chunks as $chunk )
+				 		wpmove_create_archive( $chunk, ABSPATH, $chunk_id++ );
+
+				}
 
 			}
 
@@ -1357,9 +1491,23 @@ if ( ! class_exists( 'WPMove' ) ) {
 					<br>
 				</div>
 				<h2><?php _e( 'Backup Manager', 'WPMove' ); ?> <a class="add-new-h2" href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove-backup-manager&do=create' ) ); ?>" title="Create A Backup"><?php _e( 'Backup Now', 'WPMove' ); ?></a></h2>
+				<h3><?php _e( 'Backup Now', 'WPMove' ); ?></h3>
+				<p>
+					<?php _e( 'You can always create backups of your WordPress installation to use as restoration points. Select one of the methods below to create a quick backup.', 'WPMove' ); ?>
+				</p>
+				<form method="post" action="<?php echo esc_url( admin_url( 'tools.php?page=wpmove-backup-manager' ) ); ?>">
+					<input name="act" type="hidden" value="create" />
+					<?php
+						wp_nonce_field( 'wpmove_backup_manager_create_backup' );
+						submit_button( __( 'Create a Database Backup', 'WPMove' ), 'secondary', 'wpmove_create_database_backup', FALSE );
+						echo '&nbsp;';
+						submit_button( __( 'Create a Full Backup', 'WPMove' ), 'secondary', 'wpmove_create_full_backup', FALSE );
+					?>
+				</form>			
+				<br>
 				<h3><?php _e( 'Current Backups', 'WPMove' ); ?></h3>
 				<p>
-					<?php _e( 'Below are the files stored under your backup directory. These files will be used if you choose to complete the migration.', 'WPMove' ) ?>
+					<?php _e( 'Below are the files stored under your backup directory. These files will be used if you choose to complete the migration.', 'WPMove' ); ?>
 				</p>
 				<?php
 
@@ -1374,6 +1522,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 				?>
 				<form method="post" action="<?php echo esc_url( admin_url( 'tools.php?page=wpmove-backup-manager' ) ); ?>">
 					<?php wp_nonce_field( 'wpmove_backup_manager_submit' ); ?>
+					<input name="act" type="hidden" value="manage" />
 					<div class="tablenav top">
 						<div class="alignleft actions">
 							<select name="action" size="1" height="1">
@@ -1499,6 +1648,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 				</p>
 				<form method="post" action="<?php echo esc_url( admin_url( 'tools.php?page=wpmove-backup-manager' ) ); ?>">
 					<?php wp_nonce_field( 'wpmove_backup_manager_submit' ); ?>
+					<input name="act" type="hidden" value="manage" />
 					<div class="tablenav top">
 						<div class="alignleft actions">
 							<select name="action" size="1" height="1">
