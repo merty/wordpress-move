@@ -200,7 +200,7 @@ function wpmove_replace_url( $find, $replace, $option ){
 		if ( is_array( $option ) )
 			foreach ( $option as $key => $val )
 				$option[$key] = wpmove_replace_url( $find, $replace, $val );
-		elseif ( ! is_object( $option ) )
+		elseif ( is_string( $option ) )
 			$option = str_replace( $find, $replace, $option );
 	}
 
