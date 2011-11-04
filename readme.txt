@@ -4,7 +4,7 @@ Donate link: http://www.mertyazicioglu.com
 Tags: domain, migrate, migration, move
 Requires at least: 3.2
 Tested up to: 3.2.1
-Stable tag: 1.1.1
+Stable tag: 1.2
 
 A migration assistant for WordPress capable of changing the domain name in use and/or migrating your installation to another server.
 
@@ -33,7 +33,7 @@ Yes. You can choose whether you want to change your domain name or not on the mi
 
 = Can I use WordPress Move to create backups of my installation? =
 
-Yes, you can. Clicking the Backup Now button on the Backup Manager page will back up your database and files. Your backup files will be stored under the backup directory. You can use Complete Migration mode whenever you want to use those files to revert to a former state of your installation.
+Yes, you can. Click either "Create a Database Backup" button or "Create a Full Backup" button to create a backup. Your backup files will be stored under the backup directory. You can use Complete Migration mode whenever you want to use those files to revert to a former state of your installation.
 
 = Can I use WordPress Move to transfer my database backup only? =
 
@@ -47,7 +47,19 @@ No, it does not. WordPress Move just replaces instances of your old domain name 
 
 As the warning suggests, you need to make the backup directory writable by the plugin. Permission settings vary from server to server so there is no specific value to set the directory permissions to. The easiest way to fix this problem yourself is using an FTP client to alter permission settings of the backup directory until plugin successfully creates backup files. You may also prefer requesting assistance from your hosting company.
 
+= What will happen to the FTP Password that is already stored in my database? =
+
+Visiting the WordPress Move Settings page any time after updating the plugin will remove it from the database permanently.
+
 == Changelog ==
+
+= 1.2 =
+* FTP Passwords are no longer stored in the database, for security reasons. Visit the WordPress Move Settings page after updating the plugin to remove it from the database permanently.
+* It is now possible to create either a full backup or a database backup, using Backup Manager.
+* Fixed another PHP Catchable Fatal Error some people encounter.
+* Plugin is now really able to check whether importing the database backup was successful or not.
+* Explanations on the Migration Assistant page are replaced with more clear ones.
+* Added meta boxes to the Migration Assistant.
 
 = 1.1.1 =
 * Transients are no longer included in database backups to reduce the database backup files' sizes.
@@ -63,6 +75,10 @@ As the warning suggests, you need to make the backup directory writable by the p
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.2 =
+
+FTP Passwords are no longer stored in the database, for security reasons. It is now possible to create either a full backup or a database backup, using Backup Manager. Explanations on the Migration Assistant page are replaced with more clear ones.
 
 = 1.1.1 =
 Database backup files will be smaller now as transients will not be included in database backup files. Backup files created before changing the domain name are now being stored under the old backup directory for a possible future need. A small bug is fixed and meta boxes are added to the settings page of the plugin.

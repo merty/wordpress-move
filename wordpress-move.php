@@ -3,7 +3,7 @@
 Plugin Name: WordPress Move
 Plugin URI: http://www.mertyazicioglu.com/wordpress-move/
 Description: WordPress Move is a migration assistant for WordPress that can take care of changing your domain name and/or moving your database and files to another server. After activating the plugin, please navigate to WordPress Move page under the Settings menu to configure it. Then, you can start using the Migration Assistant under the Tools menu.
-Version: 1.1.1
+Version: 1.2
 Author: Mert Yazicioglu
 Author URI: http://www.mertyazicioglu.com
 License: GPL2
@@ -204,13 +204,16 @@ if ( ! class_exists( 'WPMove' ) ) {
 										   'ftp_hostname'		=> '',
 										   'ftp_port'			=> 21,
 										   'ftp_username'		=> '',
-										   'ftp_password'		=> '',
 										   'ftp_passive_mode'	=> 1,
 										   'ftp_remote_path'	=> '',
 										 );
 
 			// Try retrieving options from the database
 			$wpmove_options = get_option( $this->admin_options_name );
+
+			// Deletes the FTP Password stored in the database
+			if ( array_key_exists( 'ftp_password', $wpmove_options ) )
+				unset( $wpmove_options['ftp_password'] );
 
 			// If the option set already exists in the database, reset their values
 			if ( ! empty( $wpmove_options ) )
@@ -248,7 +251,6 @@ if ( ! class_exists( 'WPMove' ) ) {
 				$wpmove_options['ftp_hostname']  	 = sanitize_text_field( $_POST['wpmove_ftp_hostname'] );
 				$wpmove_options['ftp_port'] 	 	 = intval( $_POST['wpmove_ftp_port'] );
 				$wpmove_options['ftp_username']  	 = sanitize_text_field( $_POST['wpmove_ftp_username'] );
-				$wpmove_options['ftp_password']  	 = sanitize_text_field( $_POST['wpmove_ftp_password'] );
 				$wpmove_options['ftp_passive_mode']  = intval( $_POST['wpmove_ftp_passive_mode'] );
 				$wpmove_options['ftp_remote_path']	 = sanitize_text_field( $_POST['wpmove_ftp_remote_path'] );
 
@@ -345,7 +347,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 							<label for="wpmove_ftp_password"><?php _e( 'Password', 'WPMove' ); ?></label>
 						</th>
 						<td>
-							<input class="regular-text" id="wpmove_ftp_password" name="wpmove_ftp_password" type="password" value="<?php echo esc_attr( $wpmove_options['ftp_password'] ); ?>" /> <i><?php _e( 'The password you use to establish an FTP connection to the remote server.', 'WPMove' ); ?></i>
+							<i><?php _e( 'You will be asked to enter your FTP Password you use to establish an FTP connection to the remote server, right before starting the migration process.', 'WPMove' ); ?></i>
 						</td>
 					</tr>
 					<tr valign="top">
@@ -353,7 +355,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 							<label for="wpmove_ftp_remote_path"><?php _e( 'Remote Backup Path', 'WPMove' ); ?></label>
 						</th>
 						<td>
-							<input class="regular-text code" id="wpmove_ftp_remote_path" name="wpmove_ftp_remote_path" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_remote_path'] ); ?>" /> <i><?php _e( 'Path from root to the backup directory of the WordPress Move plugin on the remote server. For instance:', 'WPMove' ); ?> <code>/var/www/wp-content/plugins/wordpress-move/backup/</code></i>
+							<input class="regular-text code" id="wpmove_ftp_remote_path" name="wpmove_ftp_remote_path" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_remote_path'] ); ?>" /> <i><?php _e( 'Path from the top directory that your FTP account has access to, to the backup directory of the WordPress Move plugin on the remote server. For instance:', 'WPMove' ); ?> <code>/var/www/wp-content/plugins/wordpress-move/backup/</code></i>
 						</td>
 					</tr>
 					<tr valign="top">
@@ -508,13 +510,13 @@ if ( ! class_exists( 'WPMove' ) ) {
 						<strong><?php _e( 'If you wish to do the following...', 'WPMove' ); ?></strong>
 					</p>
 					<p>
-						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'Use different domain name for this installation while staying on this server.', 'WPMove' ); ?><br>
+						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'Use this installation with a different domain name while staying on this server.', 'WPMove' ); ?><br>
 					</p>
 					<p>
 						<strong><?php _e( 'Do not forget that...', 'WPMove' ); ?></strong>
 					</p>
 					<p>
-						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'Your files and database will not be transfered to another server.', 'WPMove' ); ?><br>
+						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'Your files and database will not be transferred to another server.', 'WPMove' ); ?><br>
 						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'Only instances of your old domain name in the database will be replaced.', 'WPMove' ); ?><br>
 						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'You need to manually configure your server and new domain name to use it on this server.', 'WPMove' ); ?><br>
 						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'A backup of your database will be made available under the backup directory.', 'WPMove' ); ?><br>
@@ -888,7 +890,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 				 	} else {
 
 						// Upload files to the new server and display a success message on success
-						if ( $this->upload_files( $backups ) ) {
+						if ( $this->upload_files( $backups, sanitize_text_field( $_POST['ftp_password'] ) ) ) {
 
 						?>
 						<br>
@@ -917,9 +919,15 @@ if ( ! class_exists( 'WPMove' ) ) {
 					</div>
 					<h2><?php _e( 'Simple Migration', 'WPMove' ); ?></h2>
 					<p>
-						<?php _e( 'This will backup your database and files as is and upload them to the server you want to migrate to.', 'WPMove' ); ?><br>
+						<?php _e( 'This will backup your database and files as is and upload them to the server you want to migrate to.', 'WPMove' ); ?>
 					</p>
 					<form method="post" action="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate&type=simple' ) ); ?>">
+					<p>
+						<?php _e( 'If your FTP account uses a password, please enter it below.', 'WPMove' ); ?><br>
+						<blockquote>
+						<b><?php _e( 'FTP Password:', 'WPMove' ); ?></b> <input id="ftp_password" name="ftp_password" type="password" /><br>
+						</blockquote>
+					</p>
 						<div id="wpmove_change_domain_name">
 							<p>
 								<?php _e( 'Please enter the exact path to your WordPress installation on your new domain name without the trailing slash and then click Start Migration button to start the migration process.', 'WPMove' ); ?><br>
@@ -1028,7 +1036,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 				 	} else {
 
 						// Upload files and display a success message on success
-						if ( $this->upload_files( $backups ) ) {
+						if ( $this->upload_files( $backups, sanitize_text_field( $_POST['ftp_password'] ) ) ) {
 
 						?>
 						<br>
@@ -1061,6 +1069,12 @@ if ( ! class_exists( 'WPMove' ) ) {
 						<?php _e( 'Please select the files you want to include in the backup from the list below.', 'WPMove' ); ?>
 					</p>
 					<form method="post" action="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate&type=advanced' ) ); ?>">
+						<p>
+							<?php _e( 'If your FTP account uses a password, please enter it below.', 'WPMove' ); ?><br>
+							<blockquote>
+							<b><?php _e( 'FTP Password:', 'WPMove' ); ?></b> <input id="ftp_password" name="ftp_password" type="password" /><br>
+							</blockquote>
+						</p>
 						<div id="wpmove_change_domain_name">
 							<p>
 								<?php _e( 'Please enter the exact path to your WordPress installation on your new domain name without the trailing slash and then click Start Migration button to start the migration process.', 'WPMove' ); ?><br>
@@ -1141,9 +1155,10 @@ if ( ! class_exists( 'WPMove' ) ) {
 		 * Handles uploading processes of the migration
 		 *
 		 * @param array $files Files to upload
+		 * @param string $ftp_password FTP Password
 		 * @return bool TRUE on success, FALSE on failure
 		 */
-		function upload_files( $files ) {
+		function upload_files( $files, $ftp_password ) {
 
 				// Load plugin settings
 				$wpmove_options = $this->get_admin_options();
@@ -1168,13 +1183,13 @@ if ( ! class_exists( 'WPMove' ) ) {
 					echo ' <strong>' . __( 'Success!', 'WPMove' ) . '</strong><br>';
 
 					// Display a different message if no password is given
-					if ( '' !== $wpmove_options['ftp_password'] )
+					if ( '' !== $ftp_password )
 						printf( __( 'Logging in as %s using password...', 'WPMove' ), $wpmove_options['ftp_username'] );
 					else
 						printf( __( 'Logging in as %s without a password...', 'WPMove' ), $wpmove_options['ftp_username'] );
 
 					// Login to the server using the supplied credentials
-					if ( $ftp->login( $wpmove_options['ftp_username'], $wpmove_options['ftp_password'] ) ) {
+					if ( $ftp->login( $wpmove_options['ftp_username'], $ftp_password ) ) {
 
 						echo ' <strong>' . __( 'Success!', 'WPMove' ) . '</strong><br>' . __( 'Starting uploading files...', 'WPMove' ) . '<br>';
 
