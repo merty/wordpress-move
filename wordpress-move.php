@@ -212,7 +212,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 			$wpmove_options = get_option( $this->admin_options_name );
 
 			// Deletes the FTP Password stored in the database
-			if ( array_key_exists( 'ftp_password', $wpmove_options ) )
+			if ( is_array( $wpmove_options ) && array_key_exists( 'ftp_password', $wpmove_options ) )
 				unset( $wpmove_options['ftp_password'] );
 
 			// If the option set already exists in the database, reset their values
