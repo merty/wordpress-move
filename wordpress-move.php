@@ -3,7 +3,7 @@
 Plugin Name: WordPress Move
 Plugin URI: http://www.mertyazicioglu.com/wordpress-move/
 Description: WordPress Move is a migration assistant for WordPress that can take care of changing your domain name and/or moving your database and files to another server. After activating the plugin, please navigate to WordPress Move page under the Settings menu to configure it. Then, you can start using the Migration Assistant under the Tools menu.
-Version: 1.2
+Version: 1.3
 Author: Mert Yazicioglu
 Author URI: http://www.mertyazicioglu.com
 License: GPL2
@@ -28,6 +28,7 @@ License: GPL2
 // Define file path constants
 define( 'WPMOVE_DIR', WP_PLUGIN_DIR . '/' . basename( dirname( __FILE__ ) ) );
 define( 'WPMOVE_BACKUP_DIR', WPMOVE_DIR . '/backup' );
+define( 'WPMOVE_CONVERTED_BACKUP_DIR', WPMOVE_BACKUP_DIR . '/converted' );
 define( 'WPMOVE_OLD_BACKUP_DIR', WPMOVE_BACKUP_DIR . '/old' );
 define( 'WPMOVE_URL', WP_PLUGIN_URL . '/' . basename( dirname( __FILE__ ) ) );
 
@@ -85,18 +86,6 @@ if ( ! class_exists( 'WPMove' ) ) {
 				jQuery( document ).ready( function( $ ) {
 					$( "#wpmove-ma-domain-desc" ).css( 'min-height', $( "#wpmove-ma-migrate-desc" ).css( 'height' ) );
 					$( "#wpmove-ma-restore-desc" ).css( 'min-height', $( "#wpmove-ma-migrate-desc" ).css( 'height' ) );
-					$( "#wpmove_change_domain_name" ).css( 'display', 'none' );
-					$( "#wpmove_change_domain_name_br" ).css( 'display', 'none' );
-					$( "#wpmove_toggle_change_domain_name" ).css( 'display', 'inline' );
-					$( "#wpmove_toggle_change_domain_name" ).click( function () {
-					 	if ( $( "#wpmove_change_domain_name" ).css( 'display' ) ==  "none" ) {
-							$( "#wpmove_change_domain_name" ).css( 'display', 'block' );
-							$( "#wpmove_change_domain_name_br" ).css( 'display', 'block' );
-						} else {
-							$( "#wpmove_change_domain_name" ).css( 'display', 'none' );
-							$( "#wpmove_change_domain_name_br" ).css( 'display', 'none' );
-						}
-					} );
 					if ( $( "#wpmove_file_tree" ).length ) {
 					 	$( "#wpmove_file_tree_loading" ).css( 'display', 'block' );
 						$( "#wpmove_file_tree" ).bind( "loaded.jstree", function( event, data ) {
@@ -105,6 +94,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 							$( "#wpmove_file_tree_buttons" ).css( 'display', 'block' );
 							$( "#wpmove_file_tree_check_all" ).click( function () {	$( "#wpmove_file_tree" ).jstree( "check_all" ); } );
 							$( "#wpmove_file_tree_uncheck_all" ).click( function () { $( "#wpmove_file_tree" ).jstree( "uncheck_all" );	} );
+							$( "#wpmove_file_tree" ).jstree( "check_all" );
 						}).jstree( {
 						 	"themes" : { "dots" : false	},
 							"types" : {	"valid_children" : [ "file" ], "types" : { "file" : { "icon" : { "image" : "<?php echo WPMOVE_URL; ?>/libs/js/themes/default/file.png" } } } },
@@ -113,9 +103,9 @@ if ( ! class_exists( 'WPMove' ) ) {
 						} );
 					}
 					$( '.if-js-closed' ).removeClass( 'if-js-closed' ).addClass( 'closed' );
-					postboxes.add_postbox_toggles( 'wpmove-domain' );
-					postboxes.add_postbox_toggles( 'wpmove-migrate' );
-					postboxes.add_postbox_toggles( 'wpmove-restore' );
+					postboxes.add_postbox_toggles( 'wpmove-ma-domain' );
+					postboxes.add_postbox_toggles( 'wpmove-ma-migrate' );
+					postboxes.add_postbox_toggles( 'wpmove-ma-restore' );
 				} );
 			</script>
 			<?php
@@ -141,6 +131,9 @@ if ( ! class_exists( 'WPMove' ) ) {
 			add_meta_box( 'wpmove-ma-domain', __( 'Change Domain Name', 'WPMove' ), array( $this, 'metabox_ma_domain' ), 'wpmove-domain' );
 			add_meta_box( 'wpmove-ma-migrate', __( 'Migrate', 'WPMove' ), array( $this, 'metabox_ma_migrate' ), 'wpmove-migrate' );
 			add_meta_box( 'wpmove-ma-restore', __( 'Restore', 'WPMove' ), array( $this, 'metabox_ma_restore' ), 'wpmove-restore' );
+			add_meta_box( 'wpmove-ma-migrate-ftp', __( 'FTP Settings', 'WPMove' ), array( $this, 'metabox_ma_migrate_ftp' ), 'wpmove-ma-migrate' );
+			add_meta_box( 'wpmove-ma-migrate-domain', __( 'Change Domain Name (Optional)', 'WPMove' ), array( $this, 'metabox_ma_migrate_domain' ), 'wpmove-ma-migrate' );
+			add_meta_box( 'wpmove-ma-migrate-filetree', __( 'Files to Transfer', 'WPMove' ), array( $this, 'metabox_ma_migrate_filetree' ), 'wpmove-ma-migrate' );
 		}
 
 		/**
@@ -451,7 +444,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 				switch ( $_GET['do'] ) {
 					case 'domain':		$this->print_change_domain_name_page();
 										break;
-					case 'migrate':		$this->print_start_migration_page();
+					case 'migrate':		$this->print_migration_page();
 										break;
 					case 'complete':	$this->print_complete_migration_page();
 										break;
@@ -510,7 +503,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 						<strong><?php _e( 'If you wish to do the following...', 'WPMove' ); ?></strong>
 					</p>
 					<p>
-						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'Use this installation with a different domain name while staying on this server.', 'WPMove' ); ?><br>
+						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'Just change the domain name this installation uses.', 'WPMove' ); ?><br>
 					</p>
 					<p>
 						<strong><?php _e( 'Do not forget that...', 'WPMove' ); ?></strong>
@@ -601,7 +594,6 @@ if ( ! class_exists( 'WPMove' ) ) {
 						<strong><?php _e( 'Do not forget that...', 'WPMove' ); ?></strong>
 					</p>
 					<p>
-						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'You can select which files to use in this method by visiting the Backup Manager.', 'WPMove' ); ?><br>
 						&nbsp;&nbsp;&nbsp;<strong>&bull;</strong> <?php _e( 'Backups will be processed starting from old to new.', 'WPMove' ); ?><br>
 					</p>
 					<br>
@@ -766,12 +758,12 @@ if ( ! class_exists( 'WPMove' ) ) {
 		}
 
 		/**
-		 * Handles the migration starting process.
+		 * Handles the advanced migration process.
 		 *
 		 * @param void
 		 * @return void
 		 */
-		function print_start_migration_page() {
+		function print_migration_page() {
 
 			// Load plugin settings
 			$wpmove_options = $this->get_admin_options();
@@ -781,198 +773,6 @@ if ( ! class_exists( 'WPMove' ) ) {
 				echo '<meta http-equiv="refresh" content="0;url=options-general.php?page=wpmove-settings&ref=ma" />';
 			}
 
-			// Call the requested function if there's any
-			if ( isset( $_GET['type'] ) ) {
-
-				if ( $_GET['type'] == 'simple' )
-					$this->print_simple_migration_page();
-				elseif ( $_GET['type'] == 'advanced' )
-					$this->print_advanced_migration_page();
-
-			} else {
-
-				?>
-				<div class="wrap">
-					<div id="icon-tools" class="icon32">
-						<br>
-					</div>
-					<h2><?php _e( 'Migration Assistant', 'WPMove' ); ?></h2>
-					<p>
-						<?php _e( 'Please select a migration type to proceed...', 'WPMove' ); ?>
-					</p>
-					<table class="widefat" cellspacing="0">
-						<tbody>
-							<tr class="alternate">
-								<td class="row-title" style="width: 10%;">
-									<a href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate&type=simple' ) ); ?>"><?php _e( 'Simple Migration', 'WPMove' ); ?></a>
-								</td>
-								<td class="desc">
-									<?php _e( 'Simple Migration creates a backup of your database and files excluding the plugin directory. Uploading backup files to the remote server starts once the backup files are created.', 'WPMove' ); ?>
-								</th>
-							</tr>
-							<tr>
-								<td class="row-title">
-									<a href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate&type=advanced' ) ); ?>"><?php _e( 'Advanced Migration', 'WPMove' ); ?></a>
-								</td>
-								<td class="desc">
-									<?php _e( 'Advanced Migration creates a backup of the database but lets you select the files to backup. Uploading backup files to the remote server starts once the backup files are created.', 'WPMove' ); ?>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-				<?php
-			}
-		}
-
-		/**
-		 * Handles the simple migration process.
-		 *
-		 * @param void
-		 * @return void
-		 */
-		function print_simple_migration_page() {
-
-			if ( $_POST && check_admin_referer( 'wpmove_simple_migration_start' ) ) {
-
-			?>
-				<div class="wrap">
-					<div id="icon-tools" class="icon32">
-						<br>
-					</div>
-					<h2><?php _e( 'Simple Migration', 'WPMove' ); ?></h2>
-					<p>
-					<?php
-
-					// Load plugin settings
-					$wpmove_options = $this->get_admin_options();
-
-					// An array to hold backup files that will be uploaded
-					$backups = array();
-
-					// If changing the current domain name is also requested...
-					if ( ! empty( $_POST['old_domain_name'] ) && ! empty( $_POST['new_domain_name'] ) ) {
-
-						// Apply filters to the given domain names
-						$old_domain_name = esc_url_raw( $_POST['old_domain_name'] );
-						$new_domain_name = esc_url_raw( $_POST['new_domain_name'] );
-
-						// Create a backup of the database by changing instances of the old domain name with the newer one
-						$db_backups = wpmove_create_db_backup( $wpmove_options['db_chunk_size'], 1, $old_domain_name, $new_domain_name );
-
-					} else {
-
-						// Create a backup of the database
-						$db_backups = wpmove_create_db_backup( $wpmove_options['db_chunk_size'] );
-					
-					}
-
-					// Add names of database backup files to the array of backup files
-				 	$backups = array_merge( $backups, $db_backups );
-
-					// List all of the files inside the main directory
-					$abspath = substr( ABSPATH, 0, strlen( ABSPATH ) - 1 );
-					$files = wpmove_list_all_files( $abspath, FALSE, array( WPMOVE_DIR, WPMOVE_BACKUP_DIR, WPMOVE_OLD_BACKUP_DIR ) );
-
-				 	// Create chunks from the selected files
-				 	$chunks = wpmove_divide_into_chunks( $files, $wpmove_options['fs_chunk_size'] );
-
-				 	// To prevent overwriting archives created in the same second
-				 	$chunk_id = 1;
-
-				 	// Create an archive of the each chunk
-				 	foreach ( $chunks as $chunk )
-				 		array_push( $backups, wpmove_create_archive( $chunk, ABSPATH, $chunk_id++ ) );
-
-					// Check whether creating backups files succeeded or not
-				 	if ( ! file_exists( trailingslashit( WPMOVE_BACKUP_DIR ) . $backups['0'] ) ) {
-				 		_e( 'Could not create backup files. Please make sure the backup directory is writable. For further info, please refer to the documentation.', 'WPMove' );
-				 	} else {
-
-						// Upload files to the new server and display a success message on success
-						if ( $this->upload_files( $backups, sanitize_text_field( $_POST['ftp_password'] ) ) ) {
-
-						?>
-						<br>
-						<?php _e( 'Creating and uploading backups have been completed. You can now go to your new installation and run the migration assistant in Complete Migration mode.', 'WPMove' ); ?>
-					</p>
-				</div>
-						<?php
-
-						} else {
-
-						?>
-						<br>
-						<?php _e( 'Please check your FTP connection details on the settings page.', 'WPMove' ); ?>
-					</p>
-				</div>
-						<?php
-
-						}
-					}
-	
-			} else {
-			?>
-				<div class="wrap">
-					<div id="icon-tools" class="icon32">
-						<br>
-					</div>
-					<h2><?php _e( 'Simple Migration', 'WPMove' ); ?></h2>
-					<p>
-						<?php _e( 'This will backup your database and files as is and upload them to the server you want to migrate to.', 'WPMove' ); ?>
-					</p>
-					<form method="post" action="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate&type=simple' ) ); ?>">
-					<p>
-						<?php _e( 'If your FTP account uses a password, please enter it below.', 'WPMove' ); ?><br>
-						<blockquote>
-						<b><?php _e( 'FTP Password:', 'WPMove' ); ?></b> <input id="ftp_password" name="ftp_password" type="password" /><br>
-						</blockquote>
-					</p>
-						<div id="wpmove_change_domain_name">
-							<p>
-								<?php _e( 'Please enter the exact path to your WordPress installation on your new domain name without the trailing slash and then click Start Migration button to start the migration process.', 'WPMove' ); ?><br>
-							</p>
-							<table class="form-table">
-								<tbody>
-									<tr valign="top">
-										<th scope="row">
-											<label for="old_domain_name"><?php _e( 'Old Domain Name', 'WPMove' ); ?></label>
-										</th>
-										<td>
-											<input class="regular-text code" id="old_domain_name" name="old_domain_name" type="text" value="<?php echo home_url(); ?>" />
-										</td>
-									</tr>
-									<tr valign="top">
-										<th scope="row">
-											<label for="new_domain_name"><?php _e( 'New Domain Name', 'WPMove' ); ?></label>
-										</th>
-										<td>
-											<input class="regular-text code" id="new_domain_name" name="new_domain_name" type="text" />
-										</td>
-									</tr>
-								</tbody>
-							</table>
-							<br>
-						</div>
-						<?php
-							wp_nonce_field( 'wpmove_simple_migration_start' );
-							submit_button( __( 'Start Migration', 'WPMove' ), 'primary', 'submit', FALSE );
-						?>
-							<input type="button" name="wpmove_toggle_change_domain_name" id="wpmove_toggle_change_domain_name" class="button-secondary" value="<?php _e( 'Change Domain Name', 'WPMove' ); ?>" style="display:none;" />
-					</form>
-				</div>
-			<?php
-			}
-		}
-
-		/**
-		 * Handles the advanced migration process.
-		 *
-		 * @param void
-		 * @return void
-		 */
-		function print_advanced_migration_page() {
-
 			if ( $_POST && check_admin_referer( 'wpmove_advanced_migration_start' ) ) {
 
 				?>
@@ -980,7 +780,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 					<div id="icon-tools" class="icon32">
 						<br>
 					</div>
-					<h2><?php _e( 'Advanced Migration', 'WPMove' ); ?></h2>
+					<h2><?php _e( 'Migration Assistant', 'WPMove' ); ?></h2>
 					<p>
 					<?php
 
@@ -1064,91 +864,134 @@ if ( ! class_exists( 'WPMove' ) ) {
 					<div id="icon-tools" class="icon32">
 						<br>
 					</div>
-					<h2><?php _e( 'Advanced Migration', 'WPMove' ); ?></h2>
+					<h2><?php _e( 'Migration Assistant', 'WPMove' ); ?></h2>
 					<p>
 						<?php _e( 'Please select the files you want to include in the backup from the list below.', 'WPMove' ); ?>
 					</p>
-					<form method="post" action="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate&type=advanced' ) ); ?>">
-						<p>
-							<?php _e( 'If your FTP account uses a password, please enter it below.', 'WPMove' ); ?><br>
-							<blockquote>
-							<b><?php _e( 'FTP Password:', 'WPMove' ); ?></b> <input id="ftp_password" name="ftp_password" type="password" /><br>
-							</blockquote>
-						</p>
-						<div id="wpmove_change_domain_name">
-							<p>
-								<?php _e( 'Please enter the exact path to your WordPress installation on your new domain name without the trailing slash and then click Start Migration button to start the migration process.', 'WPMove' ); ?><br>
-							</p>
-							<table class="form-table">
-								<tbody>
-									<tr valign="top">
-										<th scope="row">
-											<label for="old_domain_name"><?php _e( 'Old Domain Name', 'WPMove' ); ?></label>
-										</th>
-										<td>
-											<input class="regular-text code" id="old_domain_name" name="old_domain_name" type="text" value="<?php echo home_url(); ?>" />
-										</td>
-									</tr>
-									<tr valign="top">
-										<th scope="row">
-											<label for="new_domain_name"><?php _e( 'New Domain Name', 'WPMove' ); ?></label>
-										</th>
-										<td>
-											<input class="regular-text code" id="new_domain_name" name="new_domain_name" type="text" />
-										</td>
-									</tr>
-								</tbody>
-							</table>
-							<br>
-						</div>
-						<?php wp_nonce_field( 'wpmove_advanced_migration_start' ); ?>
-						<div id="wpmove_file_tree_buttons" style="display: none;">
-							<input type="button" name="wpmove_file_tree_check_all" id="wpmove_file_tree_check_all" class="button-secondary" value="<?php _e( 'Select All', 'WPMove' ); ?>" />
-							<input type="button" name="wpmove_file_tree_uncheck_all" id="wpmove_file_tree_uncheck_all" class="button-secondary" value="<?php _e( 'Unselect All', 'WPMove' ); ?>" />
-							<input type="button" name="wpmove_toggle_change_domain_name" id="wpmove_toggle_change_domain_name" class="button-secondary" value="<?php _e( 'Change Domain Name', 'WPMove' ); ?>" style="display:none;" />
-						</div>
-						<blockquote>
+					<div id="poststuff" class="metabox-holder">
+						<form method="post" action="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate&type=advanced' ) ); ?>">
 							<?php
-
-								// To use as a file ID
-								$i = 0;
-
-								// List all of the files inside the main directory
-								$abspath = substr( ABSPATH, 0, strlen( ABSPATH ) - 1 );
-								$files = wpmove_generate_file_tree( $abspath, FALSE, array( WPMOVE_DIR, WPMOVE_BACKUP_DIR, WPMOVE_OLD_BACKUP_DIR ) );
-
+								wp_nonce_field( 'wpmove_advanced_migration_start' );
+								wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false );
+								wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false );
+								do_meta_boxes( 'wpmove-ma-migrate', 'advanced', null );
+								submit_button( __( 'Start Migration', 'WPMove' ), 'primary', 'submit', FALSE );
 							?>
-							<div id="wpmove_file_tree" style="display:none;">
-								<ul>
-									<?php wpmove_display_file_tree( $files ); ?>
-								</ul>
-							</div>
-							<div id="wpmove_file_tree_loading" style="display:none;">
-								<?php echo '<img src="' . WPMOVE_URL . '/libs/js/themes/default/throbber.gif" alt="' . __( 'Loading...', 'WPMove' ) . '" style="vertical-align:middle;" /> <strong>' . __( 'Loading...', 'WPMove' ) . '</strong>'; ?>
-							</div>
-							<noscript>
-								<?php
-
-									// Prepare the file list
-									$files = wpmove_list_all_files( $abspath, FALSE, array( WPMOVE_DIR, WPMOVE_BACKUP_DIR, WPMOVE_OLD_BACKUP_DIR ) );
-
-									// Display each file with a checked checkbox
-									foreach ( $files as $file ) {
-									 	if ( is_file( $file ) ) {
-										 	$short_path = str_replace( ABSPATH, '', $file );
-											echo '<input id="file-' . $i . '" name="files[]" type="checkbox" value="' . $file . '" checked> <label for="file-' . $i++ . '"><span class="code">' . $short_path . '</span></label><br>';
-										}
-									}
-
-								?>
-							</noscript>
-						</blockquote>
-						<?php submit_button( __( 'Start Migration', 'WPMove' ), 'primary', 'submit', FALSE ); ?>
-					</form>
+						</form>
+					</div>
 					<br>
 				</div>
 			<?php
 			}
+		}
+
+		/**
+		 * Callback function for the Migration FTP Settings meta box.
+		 *
+		 * @param $wpmove_options Plugin settings array
+		 * @return void
+		 */
+		function metabox_ma_migrate_ftp() {
+
+			?>
+			<p>
+				<?php _e( 'If your FTP account uses a password, please enter it below.', 'WPMove' ); ?><br>
+				<blockquote>
+					<b><?php _e( 'FTP Password:', 'WPMove' ); ?></b> <input id="ftp_password" name="ftp_password" type="password" /><br>
+				</blockquote>
+			</p>
+			<?php
+
+		}
+
+		/**
+		 * Callback function for the Migration Change Domain Name meta box.
+		 *
+		 * @param $wpmove_options Plugin settings array
+		 * @return void
+		 */
+		function metabox_ma_migrate_domain() {
+
+			?>
+			<p>
+				<?php _e( 'Please enter the exact path to your WordPress installation on your new domain name without the trailing slash and then click Start Migration button to start the migration process.', 'WPMove' ); ?><br>
+			</p>
+			<table class="form-table">
+				<tbody>
+					<tr valign="top">
+						<th scope="row">
+							<label for="old_domain_name"><?php _e( 'Old Domain Name', 'WPMove' ); ?></label>
+						</th>
+						<td>
+							<input class="regular-text code" id="old_domain_name" name="old_domain_name" type="text" value="<?php echo home_url(); ?>" />
+						</td>
+					</tr>
+					<tr valign="top">
+						<th scope="row">
+							<label for="new_domain_name"><?php _e( 'New Domain Name', 'WPMove' ); ?></label>
+						</th>
+						<td>
+							<input class="regular-text code" id="new_domain_name" name="new_domain_name" type="text" />
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<?php
+
+		}
+
+		/**
+		 * Callback function for the Migration Files to Transfer meta box.
+		 *
+		 * @param $wpmove_options Plugin settings array
+		 * @return void
+		 */
+		function metabox_ma_migrate_filetree() {
+
+			?>
+			<p id="wpmove_file_tree_buttons" style="display: none;">
+				<input type="button" name="wpmove_file_tree_check_all" id="wpmove_file_tree_check_all" class="button-secondary" value="<?php _e( 'Select All', 'WPMove' ); ?>" />
+				<input type="button" name="wpmove_file_tree_uncheck_all" id="wpmove_file_tree_uncheck_all" class="button-secondary" value="<?php _e( 'Unselect All', 'WPMove' ); ?>" />
+				<input type="button" name="wpmove_toggle_change_domain_name" id="wpmove_toggle_change_domain_name" class="button-secondary" value="<?php _e( 'Change Domain Name', 'WPMove' ); ?>" style="display:none;" />
+			</p>
+			<blockquote>
+				<?php
+
+				// To use as a file ID
+				$i = 0;
+
+				// List all of the files inside the main directory
+				$abspath = substr( ABSPATH, 0, strlen( ABSPATH ) - 1 );
+				$files = wpmove_generate_file_tree( $abspath, FALSE, array( WPMOVE_DIR, WPMOVE_BACKUP_DIR, WPMOVE_OLD_BACKUP_DIR ) );
+
+				?>
+				<div id="wpmove_file_tree" style="display:none;">
+					<ul>
+						<?php wpmove_display_file_tree( $files ); ?>
+					</ul>
+				</div>
+				<div id="wpmove_file_tree_loading" style="display:none;">
+					<?php echo '<img src="' . WPMOVE_URL . '/libs/js/themes/default/throbber.gif" alt="' . __( 'Loading...', 'WPMove' ) . '" style="vertical-align:middle;" /> <strong>' . __( 'Loading...', 'WPMove' ) . '</strong>'; ?>
+				</div>
+				<noscript>
+					<?php
+
+						// Prepare the file list
+						$files = wpmove_list_all_files( $abspath, FALSE, array( WPMOVE_DIR, WPMOVE_BACKUP_DIR, WPMOVE_OLD_BACKUP_DIR ) );
+
+						// Display each file with a checked checkbox
+						foreach ( $files as $file ) {
+						 	if ( is_file( $file ) ) {
+							 	$short_path = str_replace( ABSPATH, '', $file );
+								echo '<input id="file-' . $i . '" name="files[]" type="checkbox" value="' . $file . '" checked> <label for="file-' . $i++ . '"><span class="code">' . $short_path . '</span></label><br>';
+							}
+						}
+
+					?>
+				</noscript>
+			</blockquote>
+			<?php
+
 		}
 
 		/**
@@ -1173,6 +1016,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 				echo '<span class="code">';
 
 				printf( __( 'Connecting to %s:%d...', 'WPMove' ), $wpmove_options['ftp_hostname'], $wpmove_options['ftp_port'] );
+				$this->flush_output();
 
 				// Set the hostname and the port
 				$ftp->SetServer( $wpmove_options['ftp_hostname'], intval( $wpmove_options['ftp_port'] ) );
@@ -1181,6 +1025,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 				if ( $ftp->connect() ) {
 
 					echo ' <strong>' . __( 'Success!', 'WPMove' ) . '</strong><br>';
+					$this->flush_output();
 
 					// Display a different message if no password is given
 					if ( '' !== $ftp_password )
@@ -1188,10 +1033,14 @@ if ( ! class_exists( 'WPMove' ) ) {
 					else
 						printf( __( 'Logging in as %s without a password...', 'WPMove' ), $wpmove_options['ftp_username'] );
 
+					$this->flush_output();
+
 					// Login to the server using the supplied credentials
 					if ( $ftp->login( $wpmove_options['ftp_username'], $ftp_password ) ) {
 
 						echo ' <strong>' . __( 'Success!', 'WPMove' ) . '</strong><br>' . __( 'Starting uploading files...', 'WPMove' ) . '<br>';
+
+						$this->flush_output();
 
 						// Changes the present working directory to the backup directory on the remote server
 						$ftp->chdir( $wpmove_options['ftp_remote_path'] );
@@ -1202,12 +1051,14 @@ if ( ! class_exists( 'WPMove' ) ) {
 						// Upload the given backup files under the backup folder to the server
 						foreach ( $files as $file ) {
 							printf( __( '%s is being uploaded...', 'WPMove' ), basename( $file ) );
+							$this->flush_output();
 							if ( FALSE !== ( $ftp->put( trailingslashit( WPMOVE_BACKUP_DIR ) . $file, basename( $file ) ) ) ) {
 								echo '<strong>' . __( ' Success!', 'WPMove' ) . '</strong><br>';
 							} else {
 								echo '<strong>' . __( ' Failed!', 'WPMove' ) . '</strong><br>';
 								$error_count++;
 							}
+							$this->flush_output();
 						}
 
 						// Notify the user about the errors occured
@@ -1215,6 +1066,8 @@ if ( ! class_exists( 'WPMove' ) ) {
 							printf( _n( 'Uploading files is completed with %d error...', 'Uploading files is completed with %d errors...', $error_count, 'WPMove' ), $error_count );
 						else
 							_e( 'Uploading files is completed without an error...', 'WPMove' );
+
+						$this->flush_output();
 
 						echo '<br>';
 						_e( 'Closing the FTP connection...', 'WPMove' );
@@ -1256,51 +1109,62 @@ if ( ! class_exists( 'WPMove' ) ) {
 					<h2><?php _e( 'Completing Migration', 'WPMove' ); ?></h2>
 					<br>
 					<?php
+						// If there's an actual array sent
+						if ( isset( $_POST['files'] ) && is_array( $_POST['files'] ) ) {
 
-						// Create a list of all the files inside the backup directory
-						$files = wpmove_list_all_files( WPMOVE_BACKUP_DIR, TRUE );
+							// Sanitize the POST data
+							$files = array_map( 'sanitize_text_field', $_POST['files'] );
 
-						// Categorize the files listed
-						$backups = $this->categorize_files( $files );
+							// Categorize the files listed
+							$backups = $this->categorize_files( $files );
 
-						// Set the error counter to zero
-						$errors_occured = 0;
+							// Set the error counter to zero
+							$errors_occured = 0;
 
-						// Import every single database backup one by one
-						foreach ( $backups['db'] as $file ) {
+							// Import every single database backup one by one
+							foreach ( $backups['db'] as $file ) {
 
-							echo '<span class="code">';
-							printf( __( '%s is being imported... ', 'WPMove' ), basename( $file ) );
-							
-							if ( wpmove_import_db_backup( basename( $file ) ) ) {
-								echo '<b>' . __( 'Success!', 'WPMove' ) . '</b></span><br>';
-							} else {
-								$errors_occured++;
-								echo '<b>' . __( 'Failed!', 'WPMove' ) . '</b></span><br>';
+								echo '<span class="code">';
+								printf( __( '%s is being imported... ', 'WPMove' ), basename( $file ) );
+
+								$this->flush_output();
+								
+								if ( wpmove_import_db_backup( basename( $file ) ) ) {
+									echo '<b>' . __( 'Success!', 'WPMove' ) . '</b></span><br>';
+								} else {
+									$errors_occured++;
+									echo '<b>' . __( 'Failed!', 'WPMove' ) . '</b></span><br>';
+								}
 							}
+
+							// Extract every single file system backup one by one
+							foreach ( $backups['fs'] as $file ) {
+
+							 	echo '<span class="code">';
+								printf( __( '%s is being extracted... ', 'WPMove' ), basename( $file ) );
+
+								$this->flush_output();
+
+							 	if ( wpmove_extract_archive( basename( $file ), ABSPATH ) ) {
+									echo '<b>' . __( 'Success!', 'WPMove' ) . '</b></span><br>';
+							 	} else {
+							 	 	$errors_occured++;
+									echo '<b>' . __( 'Failed!', 'WPMove' ) . '</b></span><br>';
+							 	}
+							}
+
 						}
-
-						// Extract every single file system backup one by one
-						foreach ( $backups['fs'] as $file ) {
-
-						 	echo '<span class="code">';
-							printf( __( '%s is being extracted... ', 'WPMove' ), basename( $file ) );
-
-						 	if ( wpmove_extract_archive( basename( $file ), ABSPATH ) ) {
-								echo '<b>' . __( 'Success!', 'WPMove' ) . '</b></span><br>';
-						 	} else {
-						 	 	$errors_occured++;
-								echo '<b>' . __( 'Failed!', 'WPMove' ) . '</b></span><br>';
-						 	}
-						}
-
-						echo '<br>';
 
 						// If there were errors, notify the user
-						if ( $errors_occured > 0 )
-							printf( _n( 'Migration has been completed but with %d error.', 'Migration has been completed but with %d errors.', $errors_occured, 'WPMove' ), $errors_occured );
-						else
-							_e( 'Migration has been completed successfully!', 'WPMove' );
+						if ( ! isset( $errors_occured ) )
+							_e( 'Please select files to migrate before proceeding!', 'WPMove' );
+						else {
+							echo '<br />';
+							if ( $errors_occured > 0 )
+								printf( _n( 'Migration has been completed but with %d error.', 'Migration has been completed but with %d errors.', $errors_occured, 'WPMove' ), $errors_occured );
+							else
+								_e( 'Migration has been completed successfully!', 'WPMove' );
+						}
 
 					?>
 				</div>
@@ -1325,103 +1189,103 @@ if ( ! class_exists( 'WPMove' ) ) {
 						if ( $total_files > 2 ) {
 
 						?>
-						<?php _e( 'Proceeding will use the following files and database backups. You can choose which files to use by going to the Backup Manager.', 'WPMove' ); ?>
+						<?php _e( 'Below are the files stored under the main backup directory. Please select backup files below to proceed.', 'WPMove' ); ?>
 						<br><br>
-						<table class="wp-list-table widefat fixed" cellspacing="0">
-							<thead>
-								<tr>
-									<th scope="col" id="cb" class="manage-column column-cb check-column" style>
-										<input type="checkbox" checked disabled>
-									</th>
-									<th scope="col" id="name" class="manage-column column-name" style>
-										<a href="#"><?php _e( 'Name', 'WPMove' ); ?></a>
-									</th>
-									<th scope="col" id="type" class="manage-column column-type" style>
-										<a href="#"><?php _e( 'Type', 'WPMove' ); ?></a>
-									</th>
-									<th scope="col" id="size" class="manage-column column-size" style>
-										<a href="#"><?php _e( 'Size', 'WPMove' ); ?></a>
-									</th>
-									<th scope="col" id="date" class="manage-column column-date" style>
-										<a href="#"><?php _e( 'Date Created', 'WPMove' ); ?></a>
-									</th>
-								</tr>
-							</thead>
-							<tfoot>
-								<tr>
-									<th scope="col" id="cb" class="manage-column column-cb check-column" style>
-										<input type="checkbox" checked disabled>
-									</th>
-									<th scope="col" id="name" class="manage-column column-name" style>
-										<a href="#"><?php _e( 'Name', 'WPMove' ); ?></a>
-									</th>
-									<th scope="col" id="type" class="manage-column column-type" style>
-										<a href="#"><?php _e( 'Type', 'WPMove' ); ?></a>
-									</th>
-									<th scope="col" id="size" class="manage-column column-size" style>
-										<a href="#"><?php _e( 'Size', 'WPMove' ); ?></a>
-									</th>
-									<th scope="col" id="date" class="manage-column column-date" style>
-										<a href="#"><?php _e( 'Date Created', 'WPMove' ); ?></a>
-									</th>
-								</tr>
-							</tfoot>
-							<tbody id="the-list">
-								<?php
-
-									// For zebra striping
-									$i = 0;
-
-									foreach ( $files as $file ) {
-
-										// Get the file extension
-									 	$ext = substr( $file, -3, 3 );
-
-										// Decide the type of the backup
-										if ( 'sql' == $ext ) {
-											preg_match( '/DBBackup-([0-9]*).sql/', basename( $file ), $timestamp );
-											$type = __( 'Database Backup', 'WPMove' );
-										} else if ( 'zip' == $ext ) {
-											preg_match( '/Backup-([0-9]*).zip/', basename( $file ), $timestamp );
-											$type = __( 'Filesystem Backup', 'WPMove' );
-										}
+						<form method="post" action="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=complete' ) ); ?>">
+							<table class="wp-list-table widefat fixed" cellspacing="0">
+								<thead>
+									<tr>
+										<th scope="col" id="cb" class="manage-column column-cb check-column" style>
+											<input type="checkbox" checked>
+										</th>
+										<th scope="col" id="name" class="manage-column column-name" style>
+											<a href="#"><?php _e( 'Name', 'WPMove' ); ?></a>
+										</th>
+										<th scope="col" id="type" class="manage-column column-type" style>
+											<a href="#"><?php _e( 'Type', 'WPMove' ); ?></a>
+										</th>
+										<th scope="col" id="size" class="manage-column column-size" style>
+											<a href="#"><?php _e( 'Size', 'WPMove' ); ?></a>
+										</th>
+										<th scope="col" id="date" class="manage-column column-date" style>
+											<a href="#"><?php _e( 'Date Created', 'WPMove' ); ?></a>
+										</th>
+									</tr>
+								</thead>
+								<tfoot>
+									<tr>
+										<th scope="col" id="cb" class="manage-column column-cb check-column" style>
+											<input type="checkbox" checked>
+										</th>
+										<th scope="col" id="name" class="manage-column column-name" style>
+											<a href="#"><?php _e( 'Name', 'WPMove' ); ?></a>
+										</th>
+										<th scope="col" id="type" class="manage-column column-type" style>
+											<a href="#"><?php _e( 'Type', 'WPMove' ); ?></a>
+										</th>
+										<th scope="col" id="size" class="manage-column column-size" style>
+											<a href="#"><?php _e( 'Size', 'WPMove' ); ?></a>
+										</th>
+										<th scope="col" id="date" class="manage-column column-date" style>
+											<a href="#"><?php _e( 'Date Created', 'WPMove' ); ?></a>
+										</th>
+									</tr>
+								</tfoot>
+								<tbody id="the-list">
+									<?php
 
 										// For zebra striping
-									 	if ( $i % 2 !== 0 )
-										 	$class = ' class="alternate"';
-										else
-											$class = '';
+										$i = 0;
 
-										// Display the row
-										echo '	<tr id="file-' . $i . '" valign="middle"' . $class . '>
-													<th scope="row" class="check-column">
-														<input id="file-' . $i . '" name="files[]" type="checkbox" value="' . $file . '" checked disabled>
-													</th>
-													<td class="column-name">
-														<strong>
-															<a href="#">' . esc_html( basename( $file ) ) . '</a>
-														</strong>
-													</td>
-													<td class="column-type">
-														<a href="#">' . esc_html( $type ) . '</a>
-													</td>
-													<td class="column-size">
-														' . esc_html( round( filesize( $file ) / 1024, 2 ) ) . ' KB
-													</td>
-													<td class="column-date">
-														' . esc_html( date( 'd.m.Y H:i:s', substr( $timestamp['1'], 0, 10 )  ) ) . '
-													</td>
-												</tr>';
+										foreach ( $files as $file ) {
 
-										// Increase the counter for zebra striping
-										$i++;
-									}
+											// Get the file extension
+										 	$ext = substr( $file, -3, 3 );
 
-								?>
-							</tbody>
-						</table>
-						<br>
-						<form method="post" action="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=complete' ) ); ?>">
+											// Decide the type of the backup
+											if ( 'sql' == $ext ) {
+												preg_match( '/DBBackup-([0-9]*).sql/', basename( $file ), $timestamp );
+												$type = __( 'Database Backup', 'WPMove' );
+											} else if ( 'zip' == $ext ) {
+												preg_match( '/Backup-([0-9]*).zip/', basename( $file ), $timestamp );
+												$type = __( 'Filesystem Backup', 'WPMove' );
+											}
+
+											// For zebra striping
+										 	if ( $i % 2 !== 0 )
+											 	$class = ' class="alternate"';
+											else
+												$class = '';
+
+											// Display the row
+											echo '	<tr id="file-' . $i . '" valign="middle"' . $class . '>
+														<th scope="row" class="check-column">
+															<input id="file-' . $i . '" name="files[]" type="checkbox" value="' . $file . '" checked>
+														</th>
+														<td class="column-name">
+															<strong>
+																<a href="#">' . esc_html( basename( $file ) ) . '</a>
+															</strong>
+														</td>
+														<td class="column-type">
+															<a href="#">' . esc_html( $type ) . '</a>
+														</td>
+														<td class="column-size">
+															' . esc_html( round( filesize( $file ) / 1024, 2 ) ) . ' KB
+														</td>
+														<td class="column-date">
+															' . esc_html( date( 'd.m.Y H:i:s', substr( $timestamp['1'], 0, 10 )  ) ) . '
+														</td>
+													</tr>';
+
+											// Increase the counter for zebra striping
+											$i++;
+										}
+
+									?>
+								</tbody>
+							</table>
+							<br>
 							<?php wp_nonce_field( 'wpmove_complete_migration_start' ); ?>
 							<input class="button-primary" type="submit" name="wpmove_complete_migration" value="<?php _e( 'Complete Migration', 'WPMove' ); ?>" />
 						</form>
@@ -1467,6 +1331,9 @@ if ( ! class_exists( 'WPMove' ) ) {
 					else if ( 'toggle' == $action )
 						foreach ( $files as $file )
 							rename( $file, trailingslashit( $move_target ) . basename( $file ) );
+					else if ( 'convert' == $action )
+						foreach ( $files as $file )
+							wpmove_convert_db_backup( $file );
 				}
 
 			} else if ( $_POST && 'create' == $_POST['act'] && check_admin_referer( 'wpmove_backup_manager_create_backup' ) ) {
@@ -1534,6 +1401,10 @@ if ( ! class_exists( 'WPMove' ) ) {
 					$old_files = wpmove_list_all_files( WPMOVE_OLD_BACKUP_DIR );
 					$old_backups = $this->categorize_files( $old_files );
 
+					// List all converted database backup files
+					$converted_files = wpmove_list_all_files( WPMOVE_CONVERTED_BACKUP_DIR );
+					$converted_backups = $this->categorize_files( $converted_files );
+
 				?>
 				<form method="post" action="<?php echo esc_url( admin_url( 'tools.php?page=wpmove-backup-manager' ) ); ?>">
 					<?php wp_nonce_field( 'wpmove_backup_manager_submit' ); ?>
@@ -1542,6 +1413,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 						<div class="alignleft actions">
 							<select name="action" size="1" height="1">
 								<option value="toggle"><?php _e( 'Archive', 'WPMove' ); ?></option>
+								<option value="convert"><?php _e( 'Convert', 'WPMove' ); ?></option>
 								<option value="delete"><?php _e( 'Delete', 'WPMove' ); ?></option>
 							</select>
 							<?php submit_button( __( 'Apply', 'WPMove' ), 'secondary', 'wpmove_current_backups', FALSE ); ?>
@@ -1668,6 +1540,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 						<div class="alignleft actions">
 							<select name="action" size="1" height="1">
 								<option value="toggle"><?php _e( 'Unarchive', 'WPMove' ); ?></option>
+								<option value="convert"><?php _e( 'Convert', 'WPMove' ); ?></option>
 								<option value="delete"><?php _e( 'Delete', 'WPMove' ); ?></option>
 							</select>
 							<?php submit_button( __( 'Apply', 'WPMove' ), 'secondary', 'wpmove_old_backups', FALSE ); ?>
@@ -1782,6 +1655,125 @@ if ( ! class_exists( 'WPMove' ) ) {
 						</tbody>
 					</table>
 				</form>
+				<br>
+				<h3><?php _e( 'Converted Database Backups', 'WPMove' ); ?></h3>
+				<p>
+					<?php _e( 'Below are the converted database backup files which, unlike the files listed above, can be used outside WordPress Move. You may need the converted versions of your databsae backups if the plugin fails to migrate your installation properly. These files will not be used by the plugin at any stage.', 'WPMove' ); ?>
+				</p>
+				<form method="post" action="<?php echo esc_url( admin_url( 'tools.php?page=wpmove-backup-manager' ) ); ?>">
+					<?php wp_nonce_field( 'wpmove_backup_manager_submit' ); ?>
+					<input name="act" type="hidden" value="manage" />
+					<div class="tablenav top">
+						<div class="alignleft actions">
+							<select name="action" size="1" height="1">
+								<option value="delete"><?php _e( 'Delete', 'WPMove' ); ?></option>
+							</select>
+							<?php submit_button( __( 'Apply', 'WPMove' ), 'secondary', 'wpmove_converted_backups', FALSE ); ?>
+						</div>
+					</div>
+					<table class="wp-list-table widefat fixed" cellspacing="0">
+						<thead>
+							<tr>
+								<th scope="col" id="cb" class="manage-column column-cb check-column" style>
+									<input type="checkbox">
+								</th>
+								<th scope="col" id="name" class="manage-column column-name" style>
+									<a href="#"><?php _e( 'Name', 'WPMove' ); ?></a>
+								</th>
+								<th scope="col" id="type" class="manage-column column-type" style>
+									<a href="#"><?php _e( 'Type', 'WPMove' ); ?></a>
+								</th>
+								<th scope="col" id="size" class="manage-column column-size" style>
+									<a href="#"><?php _e( 'Size', 'WPMove' ); ?></a>
+								</th>
+								<th scope="col" id="date" class="manage-column column-date" style>
+									<a href="#"><?php _e( 'Date Created', 'WPMove' ); ?></a>
+								</th>
+							</tr>
+						</thead>
+						<tfoot>
+							<tr>
+								<th scope="col" id="cb" class="manage-column column-cb check-column" style>
+									<input type="checkbox">
+								</th>
+								<th scope="col" id="name" class="manage-column column-name" style>
+									<a href="#"><?php _e( 'Name', 'WPMove' ); ?></a>
+								</th>
+								<th scope="col" id="type" class="manage-column column-type" style>
+									<a href="#"><?php _e( 'Type', 'WPMove' ); ?></a>
+								</th>
+								<th scope="col" id="size" class="manage-column column-size" style>
+									<a href="#"><?php _e( 'Size', 'WPMove' ); ?></a>
+								</th>
+								<th scope="col" id="date" class="manage-column column-date" style>
+									<a href="#"><?php _e( 'Date Created', 'WPMove' ); ?></a>
+								</th>
+							</tr>
+						</tfoot>
+						<tbody id="the-list">
+							<?php
+
+								// Display a message if no backup files found
+								if ( count( $converted_backups, COUNT_RECURSIVE ) > 2 ) {
+
+									// For zebra striping
+									$i = 0;
+
+									// Display all current backups starting with database backups
+									foreach ( $converted_backups as $backups ) {
+
+										foreach ( $backups as $file ) {
+
+											// Get the file extension
+										 	$ext = substr( $file, -3, 3 );
+
+											// Decide the type of the backup
+											$type = __( 'Database Backup', 'WPMove' );
+
+											// For zebra striping
+										 	if ( $i % 2 !== 0 )
+											 	$class = ' class="alternate"';
+											else
+												$class = '';
+
+											// Display the row
+											echo '	<tr id="file-' . $i . '" valign="middle"' . $class . '>
+														<th scope="row" class="check-column">
+															<input id="file-' . $i . '" name="files[]" type="checkbox" value="' . $file . '">
+														</th>
+														<td class="column-name">
+															<strong>
+																<a href="#">' . esc_html( basename( $file ) ) . '</a>
+															</strong>
+														</td>
+														<td class="column-type">
+															<a href="#">' . esc_html( $type ) . '</a>
+														</td>
+														<td class="column-size">
+															' . esc_html( round( filesize( $file ) / 1024, 2 ) ) . ' KB
+														</td>
+														<td class="column-date">
+															' . esc_html( date( 'd.m.Y H:i:s', substr( $timestamp['1'], 0, 10 )  ) ) . '
+														</td>
+													</tr>';
+
+											// Increase the counter for zebra striping
+											$i++;
+										}
+									}
+
+								} else {
+
+									echo '<tr class="no-items">
+										  	<td class="colspanchange" colspan="5">
+										  		' . __( 'No converted database backup files found. You can convert a database backup file using the Convert option from the dropdown lists above.', 'WPMove' ) . '
+										  	</td>
+										  </tr>';
+								}
+							?>
+						</tbody>
+					</table>
+				</form>
 			</div>
 			<?php
 		}
@@ -1808,6 +1800,17 @@ if ( ! class_exists( 'WPMove' ) ) {
 			}
 
 			return $backups;
+		}
+
+		/**
+		 * Flushes the output buffer.
+		 *
+		 * @param void
+		 * @return void
+		 */
+		function flush_output() {
+			wp_ob_end_flush_all();
+			flush();
 		}
 
 		/**

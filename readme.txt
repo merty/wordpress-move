@@ -1,12 +1,12 @@
 === WordPress Move ===
 Contributors: merty
 Donate link: http://www.mertyazicioglu.com
-Tags: domain, migrate, migration, move
+Tags: backup, domain, migrate, migration, move, restore
 Requires at least: 3.2
-Tested up to: 3.2.1
-Stable tag: 1.2
+Tested up to: 3.3.1
+Stable tag: 1.3
 
-A migration assistant for WordPress capable of changing the domain name in use and/or migrating your installation to another server.
+Enables you to back up your installation to restore to at any time, change the domain name in use and migrate your installation to another server.
 
 == Description ==
 
@@ -47,11 +47,24 @@ No, it does not. WordPress Move just replaces instances of your old domain name 
 
 As the warning suggests, you need to make the backup directory writable by the plugin. Permission settings vary from server to server so there is no specific value to set the directory permissions to. The easiest way to fix this problem yourself is using an FTP client to alter permission settings of the backup directory until plugin successfully creates backup files. You may also prefer requesting assistance from your hosting company.
 
-= What will happen to the FTP Password that is already stored in my database? =
+= I am a pre-1.2 user, what will happen to the FTP Password that is already stored in my database? =
 
 Visiting the WordPress Move Settings page any time after updating the plugin will remove it from the database permanently.
 
+= Can I use the database backup files that WordPress Move generates with phpMyAdmin?
+
+You can convert a database backup file using the Convert option in the Backup Manager to use it outside the plugin. So, yes, you can use the *converted* database backup files with phpMyAdmin or any other script.
+
 == Changelog ==
+
+= 1.3 =
+* Explanation for Change Domain Name is rephrased.
+* Simple and Advanced Migration methods are merged.
+* Meta boxes are added to the migration page.
+* A database backup converter is integrated to convert WordPress-Move-only database backup files to generic SQL files.
+* Backup files to use for restoration can now be selected right on the Restore page.
+* Messages are now displayed in real-time on migration and restoration pages.
+* Empty HTML files are added to backup directories to prevent them being listed by people trying to access the directory via their browsers.
 
 = 1.2 =
 * FTP Passwords are no longer stored in the database, for security reasons. Visit the WordPress Move Settings page after updating the plugin to remove it from the database permanently.
@@ -76,8 +89,10 @@ Visiting the WordPress Move Settings page any time after updating the plugin wil
 
 == Upgrade Notice ==
 
-= 1.2 =
+= 1.3 =
+Simple and Advanced Migration methods are merged and a database backup converter is integrated into the Backup Manager.
 
+= 1.2 =
 FTP Passwords are no longer stored in the database, for security reasons. It is now possible to create either a full backup or a database backup, using Backup Manager. Explanations on the Migration Assistant page are replaced with more clear ones.
 
 = 1.1.1 =

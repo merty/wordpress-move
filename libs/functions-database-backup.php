@@ -7,6 +7,50 @@
  */
 
 /**
+ * Converts the database backup to an SQL file.
+ *
+ * @param 	string	$filename	Filename of the backup file
+ * @param 	string	$directory	Directory the file is inside of (optional)
+ * @return	void
+ */
+function wpmove_convert_db_backup( $filename ) {
+
+	if ( file_exists( $filename ) && preg_match( '/DBBackup-([0-9]*).sql/', basename( $filename ) ) ) {
+
+		// Read the whole database backup file into a variable
+		if ( $f = fopen( $filename, 'r' ) ) {
+			$serialized = fread( $f, filesize( $filename ) );
+			fclose( $f );
+		} else {
+			return false;
+		}
+
+		// Unserialize the queries
+		$queries = unserialize( $serialized );
+
+		// Create an output file
+		$output = touch( trailingslashit( WPMOVE_CONVERTED_BACKUP_DIR ) . 'Converted-' . basename( $filename ) );
+
+		// Display an error message if creating an output file fails
+		if ( ! $output )
+			return false;
+
+		// Open the output file and write each query one by one
+		if ( $f = fopen( trailingslashit( WPMOVE_CONVERTED_BACKUP_DIR ) . 'Converted-' . basename( $filename ), 'w' ) ) {
+			foreach ( $queries as $q )
+				fwrite( $f, $q, strlen( $q ) );
+			fclose( $f );
+		} else {
+			return false;
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+/**
  * Creates the backup of the database.
  *
  * @param	integer $chunk_size Size of the each chunk
