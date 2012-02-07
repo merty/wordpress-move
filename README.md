@@ -14,11 +14,8 @@ Installation
 ---------
 
 **1.** Upload `wordpress-move` to the `/wp-content/plugins/` directory
-
 **2.** Activate the plugin through the 'Plugins' menu in WordPress
-
 **3.** Configure the plugin through the WordPress Move page under the 'Settings' menu
-
 **4.** Start using the tools added under the 'Tools' menu
 
 
