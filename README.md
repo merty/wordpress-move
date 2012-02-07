@@ -14,8 +14,11 @@ Installation
 ---------
 
 **1.** Upload `wordpress-move` to the `/wp-content/plugins/` directory
+
 **2.** Activate the plugin through the 'Plugins' menu in WordPress
+
 **3.** Configure the plugin through the WordPress Move page under the 'Settings' menu
+
 **4.** Start using the tools added under the 'Tools' menu
 
 
@@ -58,49 +61,78 @@ Changelog
 --------
 
 **1.3**
+
 * Explanation for Change Domain Name is rephrased.
+
 * Simple and Advanced Migration methods are merged.
+
 * Meta boxes are added to the migration page.
+
 * A database backup converter is integrated to convert WordPress-Move-only database backup files to generic SQL files.
+
 * Backup files to use for restoration can now be selected right on the Restore page.
+
 * Messages are now displayed in real-time on migration and restoration pages.
+
 * Empty HTML files are added to backup directories to prevent them being listed by people trying to access the directory via their browsers.
 
+
 **1.2**
+
 * FTP Passwords are no longer stored in the database, for security reasons. Visit the WordPress Move Settings page after updating the plugin to remove it from the database permanently.
+
 * It is now possible to create either a full backup or a database backup, using Backup Manager.
+
 * Fixed another PHP Catchable Fatal Error some people encounter.
+
 * Plugin is now really able to check whether importing the database backup was successful or not.
+
 * Explanations on the Migration Assistant page are replaced with more clear ones.
+
 * Added meta boxes to the Migration Assistant.
 
+
 **1.1.1**
+
 * Transients are no longer included in database backups to reduce the database backup files' sizes.
+
 * Backup files created before changing the domain name are now being stored under the old backup directory for a possible future need.
+
 * Fixed the PHP Catchable Fatal Error some people encounter.
+
 * Added meta boxes to the settings page.
 
+
 **1.1**
+
 * Added "Backup Now" functionality to Backup Manager.
+
 * Added the capability of migrating and changing the domain name at the same time.
 
+
 **1.0**
+
 * Initial release.
 
 Upgrade Notice
 ------------
 
 **1.3**
+
 Simple and Advanced Migration methods are merged and a database backup converter is integrated into the Backup Manager.
 
 **1.2**
+
 FTP Passwords are no longer stored in the database, for security reasons. It is now possible to create either a full backup or a database backup, using Backup Manager. Explanations on the Migration Assistant page are replaced with more clear ones.
 
 **1.1.1**
+
 Database backup files will be smaller now as transients will not be included in database backup files. Backup files created before changing the domain name are now being stored under the old backup directory for a possible future need. A small bug is fixed and meta boxes are added to the settings page of the plugin.
 
 **1.1**
+
 You can now create a full backup of your installation using the Backup Now button on the Backup Manager page. Also, migrating and changing the domain name at the same time is now supported.
 
 **1.0**
+
 Initial release.
