@@ -3,7 +3,7 @@
  * WP Move File Backup Functions
  *
  * @author Mert Yazicioglu
- * @date 2011-07-19 04:17:00 +03:00
+ * @date 2012-02-29 17:48:00 +02:00
  */
 
 require_once( ABSPATH . 'wp-admin/includes/class-pclzip.php' );
@@ -47,9 +47,10 @@ function wpmove_calculate_total_usage( $directory ) {
 		return filesize( $directory );
 	
 	$totalUsage = 0;
-	
-	foreach ( glob( $directory . "/*" ) as $file )
-		$totalUsage += calculateTotalUsage( $file );
+
+	if ( is_array( $fileList = glob( $directory . "/*" ) ) )
+		foreach ( $fileList as $file )
+			$totalUsage += calculateTotalUsage( $file );
 	
 	return $totalUsage;
 }
@@ -66,21 +67,22 @@ function wpmove_list_all_files( $directory, $ignore_directories = FALSE, $ommit 
 
 	$files = array();
 
-	foreach ( glob( $directory . "/*" ) as $file ) {
-		if ( is_file( $file ) ) {
-			array_push( $files, $file );
-		} elseif ( ! $ignore_directories ) {
-			$skip = FALSE;
-		 	foreach ( $ommit as $dir )
-		 		if ( $file == $dir )
-		 			$skip = TRUE;
-		 	if ( ! $skip )
-		 		if ( count( @scandir( $file ) ) > 2 )
-					$files = array_merge( $files, wpmove_list_all_files( $file, FALSE, $ommit ) );
-				else
-					array_push( $files, $file );
+	if ( is_array( $fileList = glob( $directory . "/*" ) ) )
+		foreach ( $fileList as $file ) {
+			if ( is_file( $file ) ) {
+				array_push( $files, $file );
+			} elseif ( ! $ignore_directories ) {
+				$skip = FALSE;
+			 	foreach ( $ommit as $dir )
+			 		if ( $file == $dir )
+			 			$skip = TRUE;
+			 	if ( ! $skip )
+			 		if ( count( @scandir( $file ) ) > 2 )
+						$files = array_merge( $files, wpmove_list_all_files( $file, FALSE, $ommit ) );
+					else
+						array_push( $files, $file );
+			}
 		}
-	}
 
 	return $files;
 }
@@ -97,20 +99,21 @@ function wpmove_generate_file_tree( $directory, $ignore_directories = FALSE, $om
 	$files = array();
 	$directories = array();
 
-	foreach ( glob( $directory . "/*" ) as $file ) {
-		if ( is_file( $file ) ) {
-			array_push( $files, $file );
-		} elseif ( ! $ignore_directories ) {
-			$skip = FALSE;
-		 	foreach ( $ommit as $dir )
-		 		if ( $file == $dir )
-		 			$skip = TRUE;
-		 	if ( ! $skip ) {
-		 	 	array_push( $directories, $file );
-				array_push( $directories, wpmove_generate_file_tree( $file, FALSE, $ommit ) );
+	if ( is_array( $fileList = glob( $directory . "/*" ) ) )
+		foreach ( $fileList as $file ) {
+			if ( is_file( $file ) ) {
+				array_push( $files, $file );
+			} elseif ( ! $ignore_directories ) {
+				$skip = FALSE;
+			 	foreach ( $ommit as $dir )
+			 		if ( $file == $dir )
+			 			$skip = TRUE;
+			 	if ( ! $skip ) {
+			 	 	array_push( $directories, $file );
+					array_push( $directories, wpmove_generate_file_tree( $file, FALSE, $ommit ) );
+				}
 			}
 		}
-	}
 
 	$tree = array_merge( $directories, $files );
 
@@ -120,7 +123,7 @@ function wpmove_generate_file_tree( $directory, $ignore_directories = FALSE, $om
 /**
  * Creates lists of files by dividing files inside a directory into chunks.
  *
- * @param 	string	$files		Files to divide into chunks
+ * @param 	array	$files		Files to divide into chunks
  * @param	integer	$chunk_size	Size of chunks in bytes
  * @return	array	$chunk		File lists
  */
@@ -149,7 +152,7 @@ function wpmove_divide_into_chunks( $files, $chunk_size ) {
 /**
  * Displays the file tree using the given array of files
  *
- * @param 	string	$files	Array of files in a tree form
+ * @param 	array	$files	Array of files in a tree form
  * @return	integer $i		Updates counter to make sure every item has a unique ID
  */
 function wpmove_display_file_tree( $files, $i=0 ) {

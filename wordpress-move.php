@@ -3,7 +3,7 @@
 Plugin Name: WordPress Move
 Plugin URI: http://www.mertyazicioglu.com/wordpress-move/
 Description: WordPress Move is a migration assistant for WordPress that can take care of changing your domain name and/or moving your database and files to another server. After activating the plugin, please navigate to WordPress Move page under the Settings menu to configure it. Then, you can start using the Migration Assistant under the Tools menu.
-Version: 1.3
+Version: 1.3.1
 Author: Mert Yazicioglu
 Author URI: http://www.mertyazicioglu.com
 License: GPL2
@@ -31,16 +31,20 @@ define( 'WPMOVE_BACKUP_DIR', WPMOVE_DIR . '/backup' );
 define( 'WPMOVE_CONVERTED_BACKUP_DIR', WPMOVE_BACKUP_DIR . '/converted' );
 define( 'WPMOVE_OLD_BACKUP_DIR', WPMOVE_BACKUP_DIR . '/old' );
 define( 'WPMOVE_URL', WP_PLUGIN_URL . '/' . basename( dirname( __FILE__ ) ) );
+define( 'WPMOVE_BACKUP_URL', WPMOVE_URL . '/backup' );
+define( 'WPMOVE_CONVERTED_BACKUP_URL', WPMOVE_BACKUP_URL . '/converted' );
+define( 'WPMOVE_OLD_BACKUP_URL', WPMOVE_BACKUP_URL . '/old' );
 
 // Load functions needed for database and file operations
 require_once( 'libs/functions-database-backup.php' );
 require_once( 'libs/functions-file-backup.php' );
 
+// Some operations may exceed the limit set by max_execution_time
+set_time_limit(0);
+
 // Load PemFTP's classes if they're not loaded already
 if ( ! class_exists( 'ftp_base' ) )
 	require_once( ABSPATH . "wp-admin/includes/class-ftp.php" );
-if ( ! class_exists( 'ftp' ) )
-	require_once( ABSPATH . "wp-admin/includes/class-ftp-pure.php" );
 
 // Create the class only if it doesn't exist
 if ( ! class_exists( 'WPMove' ) ) {
@@ -1115,44 +1119,55 @@ if ( ! class_exists( 'WPMove' ) ) {
 							// Sanitize the POST data
 							$files = array_map( 'sanitize_text_field', $_POST['files'] );
 
-							// Categorize the files listed
-							$backups = $this->categorize_files( $files );
-
 							// Set the error counter to zero
 							$errors_occured = 0;
 
-							// Import every single database backup one by one
-							foreach ( $backups['db'] as $file ) {
+							// Check the extension of each file to import database backups and extract filesystem backups
+							foreach ( $files as $file ) {
 
-								echo '<span class="code">';
-								printf( __( '%s is being imported... ', 'WPMove' ), basename( $file ) );
+							 	$ext = substr( $file, -3, 3 );
 
-								$this->flush_output();
-								
-								if ( wpmove_import_db_backup( basename( $file ) ) ) {
-									echo '<b>' . __( 'Success!', 'WPMove' ) . '</b></span><br>';
-								} else {
-									$errors_occured++;
-									echo '<b>' . __( 'Failed!', 'WPMove' ) . '</b></span><br>';
+								if ( 'sql' == $ext ) {
+
+									echo '<span class="code">';
+									printf( __( '%s is being imported...', 'WPMove' ), basename( $file ) );
+
+									$this->flush_output();
+
+									echo ' <b>';
+									
+									if ( wpmove_import_db_backup( basename( $file ) ) ) {
+										_e( 'Success!', 'WPMove' );
+									} else {
+										$errors_occured++;
+										_e( 'Failed!', 'WPMove' );
+										if ( ! is_readable( $file ) )
+											echo '&nbsp;' . __( 'Check file permissions...', 'WPMove' );
+									}
+
+									echo '</b></span><br>';
+
+								} else if ( 'zip' == $ext ) {
+									
+									echo '<span class="code">';
+									printf( __( '%s is being extracted...', 'WPMove' ), basename( $file ) );
+
+									$this->flush_output();
+
+									echo ' <b>';
+
+								 	if ( wpmove_extract_archive( basename( $file ), ABSPATH ) ) {
+										_e( 'Success!', 'WPMove' );
+								 	} else {
+								 	 	$errors_occured++;
+										_e( 'Failed!', 'WPMove' );
+										if ( ! is_readable( $file ) )
+											echo '&nbsp;' . __( 'Check file permissions...', 'WPMove' );
+								 	}
+
+								 	echo '</b></span><br>';
 								}
 							}
-
-							// Extract every single file system backup one by one
-							foreach ( $backups['fs'] as $file ) {
-
-							 	echo '<span class="code">';
-								printf( __( '%s is being extracted... ', 'WPMove' ), basename( $file ) );
-
-								$this->flush_output();
-
-							 	if ( wpmove_extract_archive( basename( $file ), ABSPATH ) ) {
-									echo '<b>' . __( 'Success!', 'WPMove' ) . '</b></span><br>';
-							 	} else {
-							 	 	$errors_occured++;
-									echo '<b>' . __( 'Failed!', 'WPMove' ) . '</b></span><br>';
-							 	}
-							}
-
 						}
 
 						// If there were errors, notify the user
@@ -1182,120 +1197,119 @@ if ( ! class_exists( 'WPMove' ) ) {
 						// Create a list of all the files inside the backup directory
 						$files = wpmove_list_all_files( WPMOVE_BACKUP_DIR, TRUE );
 
-						// Categorize the files listed
-						$backups = $this->categorize_files( $files );
-						$total_files = count( $backups, COUNT_RECURSIVE );
+						if ( count( $files ) > 1 ) {
 
-						if ( $total_files > 2 ) {
+					?>
+					<?php _e( 'Below are the files stored under the main backup directory. Please select backup files below to proceed.', 'WPMove' ); ?>
+					<br><br>
+					<form method="post" action="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=complete' ) ); ?>">
+						<table class="wp-list-table widefat fixed" cellspacing="0">
+							<thead>
+								<tr>
+									<th scope="col" id="cb" class="manage-column column-cb check-column" style>
+										<input type="checkbox" checked>
+									</th>
+									<th scope="col" id="name" class="manage-column column-name" style>
+										<a href="#"><?php _e( 'Name', 'WPMove' ); ?></a>
+									</th>
+									<th scope="col" id="type" class="manage-column column-type" style>
+										<a href="#"><?php _e( 'Type', 'WPMove' ); ?></a>
+									</th>
+									<th scope="col" id="size" class="manage-column column-size" style>
+										<a href="#"><?php _e( 'Size', 'WPMove' ); ?></a>
+									</th>
+									<th scope="col" id="date" class="manage-column column-date" style>
+										<a href="#"><?php _e( 'Date Created', 'WPMove' ); ?></a>
+									</th>
+								</tr>
+							</thead>
+							<tfoot>
+								<tr>
+									<th scope="col" id="cb" class="manage-column column-cb check-column" style>
+										<input type="checkbox" checked>
+									</th>
+									<th scope="col" id="name" class="manage-column column-name" style>
+										<a href="#"><?php _e( 'Name', 'WPMove' ); ?></a>
+									</th>
+									<th scope="col" id="type" class="manage-column column-type" style>
+										<a href="#"><?php _e( 'Type', 'WPMove' ); ?></a>
+									</th>
+									<th scope="col" id="size" class="manage-column column-size" style>
+										<a href="#"><?php _e( 'Size', 'WPMove' ); ?></a>
+									</th>
+									<th scope="col" id="date" class="manage-column column-date" style>
+										<a href="#"><?php _e( 'Date Created', 'WPMove' ); ?></a>
+									</th>
+								</tr>
+							</tfoot>
+							<tbody id="the-list">
+								<?php
 
-						?>
-						<?php _e( 'Below are the files stored under the main backup directory. Please select backup files below to proceed.', 'WPMove' ); ?>
-						<br><br>
-						<form method="post" action="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=complete' ) ); ?>">
-							<table class="wp-list-table widefat fixed" cellspacing="0">
-								<thead>
-									<tr>
-										<th scope="col" id="cb" class="manage-column column-cb check-column" style>
-											<input type="checkbox" checked>
-										</th>
-										<th scope="col" id="name" class="manage-column column-name" style>
-											<a href="#"><?php _e( 'Name', 'WPMove' ); ?></a>
-										</th>
-										<th scope="col" id="type" class="manage-column column-type" style>
-											<a href="#"><?php _e( 'Type', 'WPMove' ); ?></a>
-										</th>
-										<th scope="col" id="size" class="manage-column column-size" style>
-											<a href="#"><?php _e( 'Size', 'WPMove' ); ?></a>
-										</th>
-										<th scope="col" id="date" class="manage-column column-date" style>
-											<a href="#"><?php _e( 'Date Created', 'WPMove' ); ?></a>
-										</th>
-									</tr>
-								</thead>
-								<tfoot>
-									<tr>
-										<th scope="col" id="cb" class="manage-column column-cb check-column" style>
-											<input type="checkbox" checked>
-										</th>
-										<th scope="col" id="name" class="manage-column column-name" style>
-											<a href="#"><?php _e( 'Name', 'WPMove' ); ?></a>
-										</th>
-										<th scope="col" id="type" class="manage-column column-type" style>
-											<a href="#"><?php _e( 'Type', 'WPMove' ); ?></a>
-										</th>
-										<th scope="col" id="size" class="manage-column column-size" style>
-											<a href="#"><?php _e( 'Size', 'WPMove' ); ?></a>
-										</th>
-										<th scope="col" id="date" class="manage-column column-date" style>
-											<a href="#"><?php _e( 'Date Created', 'WPMove' ); ?></a>
-										</th>
-									</tr>
-								</tfoot>
-								<tbody id="the-list">
-									<?php
+									// For zebra striping
+									$i = 0;
 
-										// For zebra striping
-										$i = 0;
+									foreach ( $files as $file ) {
 
-										foreach ( $files as $file ) {
+										// Get the file extension
+									 	$ext = substr( $file, -3, 3 );
 
-											// Get the file extension
-										 	$ext = substr( $file, -3, 3 );
-
-											// Decide the type of the backup
-											if ( 'sql' == $ext ) {
-												preg_match( '/DBBackup-([0-9]*).sql/', basename( $file ), $timestamp );
-												$type = __( 'Database Backup', 'WPMove' );
-											} else if ( 'zip' == $ext ) {
-												preg_match( '/Backup-([0-9]*).zip/', basename( $file ), $timestamp );
-												$type = __( 'Filesystem Backup', 'WPMove' );
-											}
-
-											// For zebra striping
-										 	if ( $i % 2 !== 0 )
-											 	$class = ' class="alternate"';
-											else
-												$class = '';
-
-											// Display the row
-											echo '	<tr id="file-' . $i . '" valign="middle"' . $class . '>
-														<th scope="row" class="check-column">
-															<input id="file-' . $i . '" name="files[]" type="checkbox" value="' . $file . '" checked>
-														</th>
-														<td class="column-name">
-															<strong>
-																<a href="#">' . esc_html( basename( $file ) ) . '</a>
-															</strong>
-														</td>
-														<td class="column-type">
-															<a href="#">' . esc_html( $type ) . '</a>
-														</td>
-														<td class="column-size">
-															' . esc_html( round( filesize( $file ) / 1024, 2 ) ) . ' KB
-														</td>
-														<td class="column-date">
-															' . esc_html( date( 'd.m.Y H:i:s', substr( $timestamp['1'], 0, 10 )  ) ) . '
-														</td>
-													</tr>';
-
-											// Increase the counter for zebra striping
-											$i++;
+										// Decide the type of the backup
+										if ( 'sql' == $ext ) {
+											preg_match( '/DBBackup-([0-9]*).sql/', basename( $file ), $timestamp );
+											$type = __( 'Database Backup', 'WPMove' );
+										} else if ( 'zip' == $ext ) {
+											preg_match( '/Backup-([0-9]*).zip/', basename( $file ), $timestamp );
+											$type = __( 'Filesystem Backup', 'WPMove' );
+										} else {
+											continue;
 										}
 
-									?>
-								</tbody>
-							</table>
-							<br>
-							<?php wp_nonce_field( 'wpmove_complete_migration_start' ); ?>
-							<input class="button-primary" type="submit" name="wpmove_complete_migration" value="<?php _e( 'Complete Migration', 'WPMove' ); ?>" />
-						</form>
-						<?php
+										// For zebra striping
+									 	if ( $i % 2 !== 0 )
+										 	$class = ' class="alternate"';
+										else
+											$class = '';
+
+										// Display the row
+										echo '	<tr id="file-' . $i . '" valign="middle"' . $class . '>
+													<th scope="row" class="check-column">
+														<input id="file-' . $i . '" name="files[]" type="checkbox" value="' . $file . '" checked>
+													</th>
+													<td class="column-name">
+														<strong>
+															<a href="' . esc_url( trailingslashit( WPMOVE_BACKUP_URL ) . basename( $file ) ) . '">' . esc_html( basename( $file ) ) . '</a>
+														</strong>
+													</td>
+													<td class="column-type">
+														<a href="#">' . esc_html( $type ) . '</a>
+													</td>
+													<td class="column-size">
+														' . esc_html( round( filesize( $file ) / 1024, 2 ) ) . ' KB
+													</td>
+													<td class="column-date">
+														' . esc_html( date( 'd.m.Y H:i:s', substr( $timestamp['1'], 0, 10 )  ) ) . '
+													</td>
+												</tr>';
+
+										// Increase the counter for zebra striping
+										$i++;
+									}
+
+								?>
+							</tbody>
+						</table>
+						<br>
+						<?php wp_nonce_field( 'wpmove_complete_migration_start' ); ?>
+						<input class="button-primary" type="submit" name="wpmove_complete_migration" value="<?php _e( 'Complete Migration', 'WPMove' ); ?>" />
+					</form>
+					<?php
+
 						} else {
 
 							_e( 'There are no backup files to use to complete the migration. Please start the migration using WordPress Move on the server you want to migrate from.', 'WPMove' );
 
 						}
-						?>
+					?>
 				</div>
 			<?php
 			}
@@ -1393,17 +1407,14 @@ if ( ! class_exists( 'WPMove' ) ) {
 				</p>
 				<?php
 
-					// List all current backup files and categorize them
-					$files = wpmove_list_all_files( WPMOVE_BACKUP_DIR, TRUE );
-					$current_backups = $this->categorize_files( $files );
+					// List all current backup files
+					$current_backups = wpmove_list_all_files( WPMOVE_BACKUP_DIR, TRUE );
 
-					// List all old backup files and categorize them
-					$old_files = wpmove_list_all_files( WPMOVE_OLD_BACKUP_DIR );
-					$old_backups = $this->categorize_files( $old_files );
+					// List all old backup files
+					$old_backups = wpmove_list_all_files( WPMOVE_OLD_BACKUP_DIR );
 
 					// List all converted database backup files
-					$converted_files = wpmove_list_all_files( WPMOVE_CONVERTED_BACKUP_DIR );
-					$converted_backups = $this->categorize_files( $converted_files );
+					$converted_backups = wpmove_list_all_files( WPMOVE_CONVERTED_BACKUP_DIR );
 
 				?>
 				<form method="post" action="<?php echo esc_url( admin_url( 'tools.php?page=wpmove-backup-manager' ) ); ?>">
@@ -1459,72 +1470,71 @@ if ( ! class_exists( 'WPMove' ) ) {
 							</tr>
 						</tfoot>
 						<tbody id="the-list">
-							<?php
+						<?php
 
-								// Display a message if no backup files found
-								if ( count( $current_backups, COUNT_RECURSIVE ) > 2 ) {
+							// Display a message if no backup files found
+							if ( count( $current_backups ) > 1 ) {
 
-									// For zebra striping
-									$i = 0;
+								// For zebra striping
+								$i = 0;
 
-									// Display all current backups starting with database backups
-									foreach ( $current_backups as $backups ) {
+								// Display all current backups starting with database backups
+								foreach ( $current_backups as $file ) {
 
-										foreach ( $backups as $file ) {
+									// Get the file extension
+								 	$ext = substr( $file, -3, 3 );
 
-											// Get the file extension
-										 	$ext = substr( $file, -3, 3 );
-
-											// Decide the type of the backup
-											if ( 'sql' == $ext ) {
-												preg_match( '/DBBackup-([0-9]*).sql/', basename( $file ), $timestamp );
-												$type = __( 'Database Backup', 'WPMove' );
-											} else if ( 'zip' == $ext ) {
-												preg_match( '/Backup-([0-9]*).zip/', basename( $file ), $timestamp );
-												$type = __( 'Filesystem Backup', 'WPMove' );
-											}
-
-											// For zebra striping
-										 	if ( $i % 2 !== 0 )
-											 	$class = ' class="alternate"';
-											else
-												$class = '';
-
-											// Display the row
-											echo '	<tr id="file-' . $i . '" valign="middle"' . $class . '>
-														<th scope="row" class="check-column">
-															<input id="file-' . $i . '" name="files[]" type="checkbox" value="' . $file . '">
-														</th>
-														<td class="column-name">
-															<strong>
-																<a href="#">' . esc_html( basename( $file ) ) . '</a>
-															</strong>
-														</td>
-														<td class="column-type">
-															<a href="#">' . esc_html( $type ) . '</a>
-														</td>
-														<td class="column-size">
-															' . esc_html( round( filesize( $file ) / 1024, 2 ) ) . ' KB
-														</td>
-														<td class="column-date">
-															' . esc_html( date( 'd.m.Y H:i:s', substr( $timestamp['1'], 0, 10 )  ) ) . '
-														</td>
-													</tr>';
-
-											// Increase the counter for zebra striping
-											$i++;
-										}
+									// Decide the type of the backup
+									if ( 'sql' == $ext ) {
+										preg_match( '/DBBackup-([0-9]*).sql/', basename( $file ), $timestamp );
+										$type = __( 'Database Backup', 'WPMove' );
+									} else if ( 'zip' == $ext ) {
+										preg_match( '/Backup-([0-9]*).zip/', basename( $file ), $timestamp );
+										$type = __( 'Filesystem Backup', 'WPMove' );
+									} else {
+										continue;
 									}
 
-								} else {
+									// For zebra striping
+								 	if ( $i % 2 !== 0 )
+									 	$class = ' class="alternate"';
+									else
+										$class = '';
 
-									echo '<tr class="no-items">
-										  	<td class="colspanchange" colspan="5">
-										  		' . __( 'No backup files found.', 'WPMove' ) . '
-										  	</td>
-										  </tr>';
+									// Display the row
+									echo '	<tr id="file-' . $i . '" valign="middle"' . $class . '>
+												<th scope="row" class="check-column">
+													<input id="file-' . $i . '" name="files[]" type="checkbox" value="' . $file . '">
+												</th>
+												<td class="column-name">
+													<strong>
+														<a href="' . esc_url( trailingslashit( WPMOVE_BACKUP_URL ) . basename( $file ) ) . '">' . esc_html( basename( $file ) ) . '</a>
+													</strong>
+												</td>
+												<td class="column-type">
+													<a href="#">' . esc_html( $type ) . '</a>
+												</td>
+												<td class="column-size">
+													' . esc_html( round( filesize( $file ) / 1024, 2 ) ) . ' KB
+												</td>
+												<td class="column-date">
+													' . esc_html( date( 'd.m.Y H:i:s', substr( $timestamp['1'], 0, 10 )  ) ) . '
+												</td>
+											</tr>';
+
+									// Increase the counter for zebra striping
+									$i++;
 								}
-							?>
+
+							} else {
+
+								echo '<tr class="no-items">
+									  	<td class="colspanchange" colspan="5">
+									  		' . __( 'No backup files found.', 'WPMove' ) . '
+									  	</td>
+									  </tr>';
+							}
+						?>
 						</tbody>
 					</table>
 				</form>
@@ -1586,72 +1596,71 @@ if ( ! class_exists( 'WPMove' ) ) {
 							</tr>
 						</tfoot>
 						<tbody id="the-list">
-							<?php
+						<?php
 
-								// Display a message if no backup files found
-								if ( count( $old_backups, COUNT_RECURSIVE ) > 2 ) {
+							// Display a message if no backup files found
+							if ( count( $old_backups ) > 1 ) {
 
-									// For zebra striping
-									$i = 0;
+								// For zebra striping
+								$i = 0;
 
-									// Display all old backups starting with database backups
-									foreach ( $old_backups as $backups ) {
+								// Display all old backups starting with database backups
+								foreach ( $old_backups as $file ) {
 
-										foreach ( $backups as $file ) {
+									// Get the file extension
+								 	$ext = substr( $file, -3, 3 );
 
-											// Get the file extension
-										 	$ext = substr( $file, -3, 3 );
-
-											// Decide the backup type
-											if ( $ext == 'sql' ) {
-												preg_match( '/DBBackup-([0-9]*).sql/', basename( $file ), $timestamp );
-												$type = __( 'Database Backup', 'WPMove' );
-											} else if ( $ext == 'zip' ) {
-												preg_match( '/Backup-([0-9]*).zip/', basename( $file ), $timestamp );
-												$type = __( 'Filesystem Backup', 'WPMove' );
-											}
-
-											// For zebra striping
-										 	if ( $i % 2 !== 0 )
-											 	$class = ' class="alternate"';
-											else
-												$class = '';
-
-											// Display the row
-											echo '	<tr id="file-' . $i . '" valign="middle"' . $class . '>
-														<th scope="row" class="check-column">
-															<input id="file-' . $i . '" name="files[]" type="checkbox" value="' . $file . '">
-														</th>
-														<td class="column-name">
-															<strong>
-																<a href="#">' . esc_html( basename( $file ) ) . '</a>
-															</strong>
-														</td>
-														<td class="column-type">
-															<a href="#">' . esc_html( $type ) . '</a>
-														</td>
-														<td class="column-size">
-															' . esc_html( round( filesize( $file ) / 1024, 2 ) ) . ' KB
-														</td>
-														<td class="column-date">
-															' . esc_html( date( 'd.m.Y H:i:s', substr( $timestamp['1'], 0, 10 )  ) ) . '
-														</td>
-													</tr>';
-	
-											// For zebra striping
-											$i++;
-										}
+									// Decide the backup type
+									if ( $ext == 'sql' ) {
+										preg_match( '/DBBackup-([0-9]*).sql/', basename( $file ), $timestamp );
+										$type = __( 'Database Backup', 'WPMove' );
+									} else if ( $ext == 'zip' ) {
+										preg_match( '/Backup-([0-9]*).zip/', basename( $file ), $timestamp );
+										$type = __( 'Filesystem Backup', 'WPMove' );
+									} else {
+										continue;
 									}
 
-								} else {
+									// For zebra striping
+								 	if ( $i % 2 !== 0 )
+									 	$class = ' class="alternate"';
+									else
+										$class = '';
 
-									echo '<tr class="no-items">
-										  	<td class="colspanchange" colspan="5">
-										  		' . __( 'No backup files found.', 'WPMove' ) . '
-										  	</td>
-										  </tr>';
+									// Display the row
+									echo '	<tr id="file-' . $i . '" valign="middle"' . $class . '>
+												<th scope="row" class="check-column">
+													<input id="file-' . $i . '" name="files[]" type="checkbox" value="' . $file . '">
+												</th>
+												<td class="column-name">
+													<strong>
+														<a href="' . esc_url( trailingslashit( WPMOVE_OLD_BACKUP_URL ) . basename( $file ) ) . '">' . esc_html( basename( $file ) ) . '</a>
+													</strong>
+												</td>
+												<td class="column-type">
+													<a href="#">' . esc_html( $type ) . '</a>
+												</td>
+												<td class="column-size">
+													' . esc_html( round( filesize( $file ) / 1024, 2 ) ) . ' KB
+												</td>
+												<td class="column-date">
+													' . esc_html( date( 'd.m.Y H:i:s', substr( $timestamp['1'], 0, 10 )  ) ) . '
+												</td>
+											</tr>';
+	
+									// For zebra striping
+									$i++;
 								}
-							?>
+
+							} else {
+
+								echo '<tr class="no-items">
+									  	<td class="colspanchange" colspan="5">
+									  		' . __( 'No backup files found.', 'WPMove' ) . '
+									  	</td>
+									  </tr>';
+							}
+						?>
 						</tbody>
 					</table>
 				</form>
@@ -1711,95 +1720,72 @@ if ( ! class_exists( 'WPMove' ) ) {
 							</tr>
 						</tfoot>
 						<tbody id="the-list">
-							<?php
+						<?php
 
-								// Display a message if no backup files found
-								if ( count( $converted_backups, COUNT_RECURSIVE ) > 2 ) {
+							// Display a message if no backup files found
+							if ( count( $converted_backups ) > 1 ) {
 
-									// For zebra striping
-									$i = 0;
+								// For zebra striping
+								$i = 0;
 
-									// Display all current backups starting with database backups
-									foreach ( $converted_backups as $backups ) {
+								// Display all current backups starting with database backups
+								foreach ( $converted_backups as $file ) {
 
-										foreach ( $backups as $file ) {
+									// Get the file extension
+								 	$ext = substr( $file, -3, 3 );
 
-											// Get the file extension
-										 	$ext = substr( $file, -3, 3 );
-
-											// Decide the type of the backup
-											$type = __( 'Database Backup', 'WPMove' );
-
-											// For zebra striping
-										 	if ( $i % 2 !== 0 )
-											 	$class = ' class="alternate"';
-											else
-												$class = '';
-
-											// Display the row
-											echo '	<tr id="file-' . $i . '" valign="middle"' . $class . '>
-														<th scope="row" class="check-column">
-															<input id="file-' . $i . '" name="files[]" type="checkbox" value="' . $file . '">
-														</th>
-														<td class="column-name">
-															<strong>
-																<a href="#">' . esc_html( basename( $file ) ) . '</a>
-															</strong>
-														</td>
-														<td class="column-type">
-															<a href="#">' . esc_html( $type ) . '</a>
-														</td>
-														<td class="column-size">
-															' . esc_html( round( filesize( $file ) / 1024, 2 ) ) . ' KB
-														</td>
-														<td class="column-date">
-															' . esc_html( date( 'd.m.Y H:i:s', substr( $timestamp['1'], 0, 10 )  ) ) . '
-														</td>
-													</tr>';
-
-											// Increase the counter for zebra striping
-											$i++;
-										}
+									// Decide the type of the backup
+									if ( $ext == 'sql' ) {
+										preg_match( '/DBBackup-([0-9]*).sql/', basename( $file ), $timestamp );
+										$type = __( 'Database Backup', 'WPMove' );
+									} else {
+										continue;
 									}
 
-								} else {
+									// For zebra striping
+								 	if ( $i % 2 !== 0 )
+									 	$class = ' class="alternate"';
+									else
+										$class = '';
 
-									echo '<tr class="no-items">
-										  	<td class="colspanchange" colspan="5">
-										  		' . __( 'No converted database backup files found. You can convert a database backup file using the Convert option from the dropdown lists above.', 'WPMove' ) . '
-										  	</td>
-										  </tr>';
+									// Display the row
+									echo '	<tr id="file-' . $i . '" valign="middle"' . $class . '>
+												<th scope="row" class="check-column">
+													<input id="file-' . $i . '" name="files[]" type="checkbox" value="' . $file . '">
+												</th>
+												<td class="column-name">
+													<strong>
+														<a href="' . esc_url( trailingslashit( WPMOVE_CONVERTED_BACKUP_URL ) . basename( $file ) ) . '">' . esc_html( basename( $file ) ) . '</a>
+													</strong>
+												</td>
+												<td class="column-type">
+													<a href="#">' . esc_html( $type ) . '</a>
+												</td>
+												<td class="column-size">
+													' . esc_html( round( filesize( $file ) / 1024, 2 ) ) . ' KB
+												</td>
+												<td class="column-date">
+													' . esc_html( date( 'd.m.Y H:i:s', substr( $timestamp['1'], 0, 10 )  ) ) . '
+												</td>
+											</tr>';
+
+									// Increase the counter for zebra striping
+									$i++;
 								}
-							?>
+							} else {
+
+								echo '<tr class="no-items">
+									  	<td class="colspanchange" colspan="5">
+									  		' . __( 'No converted database backup files found. You can convert a database backup file using the Convert option from the dropdown lists above.', 'WPMove' ) . '
+									  	</td>
+									  </tr>';
+							}
+						?>
 						</tbody>
 					</table>
 				</form>
 			</div>
 			<?php
-		}
-
-		/**
-		 * Categorizes given files.
-		 *
-		 * @param array $files Array of files
-		 * @return array $backups Array of categorized files
-		 */
-		function categorize_files( $files ) {
-
-			// Initialize the array
-			$backups = array( 'db'	=> array(),
-							  'fs'	=> array() );
-
-			// Check the extension of each file and categorize accordingly
-			foreach ( $files as $file ) {
-			 	$ext = substr( $file, -3, 3 );
-				if ( 'sql' == $ext )
-					array_push( $backups['db'], $file );
-				else if ( 'zip' == $ext )
-					array_push( $backups['fs'], $file );
-			}
-
-			return $backups;
 		}
 
 		/**
