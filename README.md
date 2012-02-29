@@ -25,6 +25,10 @@ Installation
 Frequently Asked Questions
 ----------------------
 
+** I am getting the "Could not activate the plugin because it generated a fatal error." error when I try to activate the plugin. Why? **
+
+WordPress Move needs php_sockets extension to be enabled, in order to work properly. If you are getting this error message, please enable php_sockets extension and restart your web server. Once you successfully enable the extension, you will be able to activate the plugin.
+
 **Do I need to install WordPress and WordPress Move on the new server as well, if I want to use WordPress Move for migration purposes?**
 
 Yes you do.
@@ -59,6 +63,16 @@ You can convert a database backup file using the Convert option in the Backup Ma
 
 Changelog
 --------
+
+**1.3.1**
+
+* Fixed several bugs.
+
+* Improved the performance of the plugin in complex tasks.
+
+* It is now possible to download a backup file by clicking on its name.
+
+* If the Safe Mode is disabled, operations will not be interrupted by the maximum execution time error anymore.
 
 **1.3**
 
@@ -116,6 +130,10 @@ Changelog
 
 Upgrade Notice
 ------------
+
+**1.3.1**
+
+Performance has been improved and several bugs have been fixed. Also, if the Safe Mode is disabled, operations will not be interrupted by the maximum execution time error anymore.
 
 **1.3**
 
