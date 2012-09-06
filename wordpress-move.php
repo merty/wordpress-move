@@ -40,7 +40,8 @@ require_once( 'libs/functions-database-backup.php' );
 require_once( 'libs/functions-file-backup.php' );
 
 // Some operations may exceed the limit set by max_execution_time
-set_time_limit(0);
+if( ! ini_get('safe_mode') )
+	set_time_limit(0);
 
 // Load PemFTP's classes if they're not loaded already
 if ( ! class_exists( 'ftp_base' ) )
