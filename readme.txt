@@ -3,8 +3,8 @@ Contributors: merty
 Donate link: http://www.mertyazicioglu.com
 Tags: backup, domain, migrate, migration, move, restore
 Requires at least: 3.2
-Tested up to: 3.4
-Stable tag: 1.3.1
+Tested up to: 3.4.2
+Stable tag: 1.3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -63,6 +63,9 @@ You can convert a database backup file using the Convert option in the Backup Ma
 
 == Changelog ==
 
+= 1.3.2 =
+* Fixed the bug causing problems with other plugins such as Gravity Forms.
+
 = 1.3.1 =
 * Fixed several bugs.
 * Improved the performance of the plugin in complex tasks.
@@ -100,6 +103,9 @@ You can convert a database backup file using the Convert option in the Backup Ma
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.3.2 =
+The bug that was causing problems with other plugins has been fixed. Previous releases were omitting NULL fields and causing data loss as a result.
 
 = 1.3.1 =
 Performance has been improved and several bugs have been fixed. Also, if the Safe Mode is disabled, operations will not be interrupted by the maximum execution time error anymore.

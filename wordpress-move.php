@@ -3,7 +3,7 @@
 Plugin Name: WordPress Move
 Plugin URI: http://www.mertyazicioglu.com/wordpress-move/
 Description: WordPress Move is a migration assistant for WordPress that can take care of changing your domain name and/or moving your database and files to another server. After activating the plugin, please navigate to WordPress Move page under the Settings menu to configure it. Then, you can start using the Migration Assistant under the Tools menu.
-Version: 1.3.1
+Version: 1.3.2
 Author: Mert Yazicioglu
 Author URI: http://www.mertyazicioglu.com
 License: GPL2

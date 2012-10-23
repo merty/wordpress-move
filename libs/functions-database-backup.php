@@ -3,7 +3,7 @@
  * WP Move Database Backup Functions
  *
  * @author Mert Yazicioglu
- * @date 2011-11-04 02:42:00 +02:00
+ * @date 2012-10-24 02:42:00 +03:00
  */
 
 /**
@@ -109,7 +109,7 @@ function wpmove_create_db_backup( $chunk_size = 0, $chunk_id = 1, $old_url = NUL
 
 			$values = array();
 
-			while ( isset( $row[$i][$j] ) ) {
+			while ( array_key_exists( $j, $row[$i] ) ) {
 
 				if ( strstr( $row[$i][$j], '_site_transient_' ) || strstr( $row[$i][$j], '_transient_' ) )
 					continue 2;
