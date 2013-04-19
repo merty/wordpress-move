@@ -1,77 +1,182 @@
+<!DOCTYPE html>
 <html>
-<head>
-	<title>WordPress Move Documentation</title>
-	<link href="style.css" rel="stylesheet" type="text/css" />
-</head>
-<body>
-	<h1 id="logo"><img src="wpmove.png" title="WordPress Move" /></h1>
-	<p>This documentation is was written to help new WordPress Move users start using the plugin faster and more efficiently. Even though the plugin is designed to be as straightforward as possible, it may still be confusing for new users. It is highly recommended that you read this documentation before using the plugin. You can find the list of topics covered in this documentation below.</p>
-	<h3>Contents</h3>
-		<ul>
-			<li><a href="#installation" title="Installation">Installation</a></li>
-			<li><a href="#configuration" title="Configuration">Configuration</a></li>
-			<li><a href="#using" title="Using The Plugin">Using The Plugin</a>
-				<ul>
-					<li><a href="#assistant" title="Migration Assistant">Migration Assistant</a>
-						<ul>
-							<li><a href="#domain" title="Changing Domain Name">Change Domain Name</a></li>
-							<li><a href="#start" title="Start Migration">Start Migration</a></li>
-							<li><a href="#complete" title="Complete Migration">Complete Migration</a></li>
-						</ul>
-					</li>
-					<li><a href="#backup" title="Backup Manager">Backup Manager</a></li>
-				</ul>
-			</li>
-			<li><a href="#faq" title="Frequently Asked Questions">Frequently Asked Questions</a></li>
-		</ul>
-	<h2 id="installation">Installation</h2>
-	<p>Installing WordPress Move is no different than other plugins. You can either download the plugin from <a href="http://wordpress.org/extend/plugins/" title="WordPress Plugin Directory">WordPress Plugin Directory</a> and install it manually or use the search feature on the Install Plugin page.</p>
-	<p>There are actually two different types of manual installations. For both of them, first you need to download the plugin in .zip format from <a href="http://wordpress.org/extend/plugins/" title="WordPress Plugin Directory">WordPress Plugin Directory</a>. Then you can follow one of the manual installation methods explained below.</p>
-	<p>The first way is using the Upload tab on the Install Plugin page. To begin, please navigate to <code>Administration Panel &rarr; Plugins &rarr; Add New &rarr; Upload</code> to upload the .zip file you have just downloaded. Once you select the file to upload from your computer and click the Install Now button, WordPress will automatically install the plugin for you.</p>
-	<p>The second way is uploading the contents of the .zip file you have just downloaded to <code>/wp-content/plugins/</code> directory using your FTP client. Do not forget that you need to upload the directory inside the .zip file not the .zip file itself. For further instructions on uploading files using your FTP client, please refer to the documentation of your FTP client.</p>
-	<p>The easiest way to install the plugin, however, is using the Search feature on the Install Plugin page. To begin, please navigate to <code>Administration Panel &rarr; Plugins &rarr; Add New</code> where you can search for the plugin by typing WordPress Move to the textbox and clicking the Search Plugins button. Then, on the search results page, please click the Install Now link displayed under the name of the plugin to begin installing the plugin.</p>
-	<p>After following one of these three methods, please navigate to <code>Administration Panel &rarr; Plugins &rarr; Installed Plugins</code> page and activate the plugin using the Activate link display right under the name of the plugin. Once you see the <code>Plugin activated.</code> notification at the top, you are ready to start using the plugin.</p>
-	<h2 id="configuration">Configuration</h2>
-	<p>Once you activated WordPress Move, it added 3 pages to your Administration Panel: Migration Assistant, Backup Manager and WordPress Move. First two are located under the Tools menu while the last one is located under the Settings menu. To configure the plugin, you need to navigate to WordPress Move page under the Settings menu. Before diving into configuring the plugin, please note that configuration is only necessary if you are planning to use the plugin to migrate to another server. In other words, you do not need any configuration if you are only going to use the plugin to change the domain name of your existing installation. or complete the migration started from another server. Also, if you are planning to use the plugin to migrate your existing installation to another server, first you need to install WordPress and WordPress Move on the remote server as well before continuing.</p>
-	<p>If you have successfully completed installing WordPress and WordPress Move on the remote server, please navigate to WordPress Move Settings page, where you will see eight settings under three titles.</p>
-	<ul>
-		<li>First set of settings are used to connect to the server you want to migrate to. Most probably you are already familiar with the first four settings but if you are not, it might be a good idea to request some assistance from your hosting company to obtain these details. Once you obtain them, please fill in these settings. Now, to fill in the next setting, Remote Backup Path, you need to know the exact path to the directory you have WordPress installed on the remote server. The easiest way to learn this is using an FTP client to connect the server and navigating to the directory where WordPress is installed. Once you get there, copy the path and paste it to the Remote Backup Path setting field on the settings page of the plugin. Then, append the following to that path: <code>/wp-content/plugins/wordpress-move/backup/</code>. The reason why this is not automatically appended by the plugin is to give power users the ability to change the backup directory with two small alterations (the other is changing the <code>WPMOVE_BACKUP_DIR</code> constant on wordpress-move.php file). The last setting in this set is the Passive Mode setting. If you do not know what to set, please leave it as is and toggle if you experience issues with connecting to the remote server.</li>
-		<li>The second set of settings is Database Backup Settings which consists of only one setting that defines the chunk size of the database backup that will be created, in megabytes. Please type 0 to create the database backup as a single file.</li>
-		<li>The third set of settings is File Backup Settings which consists of only one setting that defines the size of files to compress per filesystem backup chunk, in megabytes. Please type 0 to create the filesystem backup as a single file.</li>
-	</ul>
-	<p>Now you are ready to start the migration by going to the Migration Assistant page under the Tools menu.</p>
-	<h2 id="using">Using The Plugin</h2>
-	<p>Using the plugin is fairly simple. If you want to change your domain name, start migrating to another server or complete the migration you have already started from another server, you need to navigate to Migration Assistant page under the tools menu. However, if you want to manage the backup files under the backup directory, you need to navigate to Backup Manager page under the tools menu.</p>
-	<h2 id="assistant">Migration Assistant</h2>
-	<p>Migration Assistant welcomes you with three different actions you may want to perform: Change Domain Name, Start Migration and Complete Migration. If you wish to only change the domain name of your current installation, you should click the Change Domain Name link. If you wish to migrate to another server, you should click the Start Migration link. Once again, do not forget that you need to configure the plugin by going to WordPress Move page under the Settings menu before starting the migration. And finally, if you wish to complete the migration process started from another server, click the Complete Migration link.</p>
-		<h3 id="domain">Change Domain Name</h3>
-		<p>Changing the domain name that your current installation operates on is quite easy. Just type in the new domain name you want to use instead of the current domain name and click the Change button. Plugin will immediately change all instances of your old domain name in the database with your new domain name. WordPress Move also backups your database before starting the operation so if something goes wrong, it rolls back all the changes made. Of course, rolling back may also fail under some circumstances so creating a backup of your database manually beforehand is always a good idea. WordPress Move actually saves the backup file it creates beforehand to the old backup directory in case something goes wrong either during the domain name changing procedure or afterwards. Note that database backup files WordPress Move creates are not like normal database backup files, so you will need a working instance of WordPress Move on that server to be able to restore using those backup files. Still, creating a backup file yourself is highly encouraged. Do not forget that WordPress Move only replaces instances of your old domain name in the database with your new domain name and does not make any further configurations needed to make your domain work on your host. Please refer to the question in the FAQ section for some additional information about this.</p>
-		<h3 id="start">Start Migration</h3>
-		<p>Start Migration page provides two different types of migration: Simple Migration and Advanced Migration.</p>
-		<ul>
-			<li><strong>Simple Migration:</strong> Simple Migration creates the backup of your files and database, and uploads them to the remote server right after you click the Start Migration button on the confirmation page. Therefore, Simple Migration requires no extra input.</li>
-			<li><strong>Advanced Migration:</strong> Advanced Migration displays all the files under your WordPress installation directory and asks you the files to backup. Once you click the Start Migration button, it creates the backup of your database and the files you selected, and uploads them to the remote server. If you do not select any files, only a backup of your database will be uploaded to the server you want to migrate to.</li>
-		</ul>
-		<p>Both of these methods creates backup files in chunks if you set a Chunk Size on the settings page of the plugin and also provides you the option to change the domain name that will be used on your new server. When starting the migration succeeds, you can run WordPress Move on the remote server in Complete Migration mode to complete the migration process.</p>
-		<h3 id="complete">Complete Migration</h3>
-		<p>Complete Migration basically imports database backups and extracts filesystem backups, created and uploaded by WordPress Move on the server you want to migrate from. When you navigate to Complete Migration page, it lists all the backup files that are going to be imported or extracted once you click the Complete Migration button. To select which files to import or extract, please navigate to Backup Manager page under the Tools menu. Do not forget that this process does not create a backup of your existing installation so if something goes wrong, it will not be possible to rollback the changes. It is your responsibility to backup your files and the database before clicking the Complete Migration button. If there are no files listed on the Complete Migration page, please make sure you started the migration successfully using WordPress Move on the server you want to migrate from.</p>
-	<h2 id="backup">Backup Manager</h2>
-	<p>Backup Manager is the place to organize the backup files either created by the plugin on the same server, or uploaded by the server you want to migrate from. If this is the server you want to migrate from, you can delete backup files after the Migration Assistant completes uploading them to the remote server. If you do not want to delete them, you can Archive them which basically means moving them to a sub-directory called <code>old</code>. You can always Unarchive the files you Archived using the Backup Manager. Files listed under Current Backups are the files that will be used by the Complete Migration mode so you can either delete or achive the files you do not want Complete Migration to use. Files listed under the Old Backups section are not used for anything so you can safely Archive the backup files you do not want to use but also do not want to delete.</p>
-	<h2 id="faq">Frequently Asked Questions</h2>
-	<ol>
-		<li><strong>Do I need to install WordPress and WordPress Move on the new server as well, if I want to use WordPress Move for migration purposes?</strong>
-		<br>Yes you do.</li>
-		<li><strong>Is it possible to both migrate to another server and change the domain name?</strong>
-		<br>Yes. You can choose whether you want to change your domain name or not on the migration screen. Note that it does not change the domain name used by the current installation, it just replaces instances of the old domain name with the new one on the fly while creating a database backup for migration.</li>
-		<li><strong>Can I use WordPress Move to create backups of my installation?</strong>
-		<br>Yes, you can. Clicking the Backup Now button on the Backup Manager page will back up your database and files. Your backup files will be stored under the backup directory. You can use Complete Migration mode whenever you want to use those files to revert to a former state of your installation.</li>
-		<li><strong>Can I use WordPress Move to transfer my database backup only?</strong>
-		<br>Yes, you can. All you need to do is selecting the Advanced Migration during the migration type selection page and not selecting any files when the file tree is displayed. Once you click the Start Migration button, the plugin will create a backup of your database only and transfer it to your new server. When you run WordPress Move on your new server in Complete Migration mode, the plugin will import the database backup created by your old WordPress installation.</li>
-		<li><strong>Does WordPress Move take care of changing the whole domain name changing process?</strong>
-		<br>No, it does not. WordPress Move just replaces instances of your old domain name in your database with the new domain name you provide. It is still your responsibility to point your domain name to the name servers used by your hosting company and make necessary configurations on the control panel provided by your hosting company. Before starting this process, please request assistance from your hosting company as some companies' systems erase all your data without creating backups when you change your domain name. Also, do not forget that it is always a good idea to have a backup of your files and the database before starting operations like these.</li>
-		<li><strong>Plugin fails to create backup files because it says my backup directory is not writable. How can I fix this?</strong>
-		<br>As the warning suggests, you need to make the backup directory writable by the plugin. Permission settings vary from server to server so there is no specific value to set the directory permissions to. The easiest way to fix this problem yourself is using an FTP client to alter permission settings of the backup directory until plugin successfully creates backup files. You may also prefer requesting assistance from your hosting company.</li>
-	</ol>
-	<p class="credits"><small>Project sponsored by <a href="http://code.google.com/soc/" title="Google Summer of Code">Google</a>, developed by <a href="http://twitter.com/_mert" title="Mert Yazicioglu">Mert Yazicioglu</a> and mentored by <a href="http://twitter.com/petemall" title="Pete Mall">Pete Mall</a> and <a href="http://twitter.com/brianlayman" title="Brian Layman">Brian Layman</a>.</small></p>
-</body>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>WordPress Move by merty</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>WordPress Move</h1>
+          <h2>WordPress Move is a migration assistant for WordPress that is capable of changing the domain name in use or migrating your installation to another server either as is or based on your choices.</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/merty/wordpress-move/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/merty/wordpress-move/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/merty/wordpress-move" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h1>WordPress Move</h1>
+
+<p>WordPress Move enables you to back up your installation to restore to at any time, change the domain name in use and migrate your installation to another server.</p>
+
+<h2>Description</h2>
+
+<p>WordPress Move is a migration assistant for WordPress that is capable of changing the domain name in use and/or migrating your installation to another server either as is or based on your choices. In addition to these, you can use WordPress Move to transfer your database or create backups of your installation. For further information on using the plugin, please refer to the documentation provided with the plugin.</p>
+
+<p><strong>Disclaimer:</strong> Even though this plugin is heavily tested, please use it at your own risk and do not forget to back up your files beforehand.</p>
+
+<h2>Installation</h2>
+
+<p><strong>1.</strong> Upload <code>wordpress-move</code> to the <code>/wp-content/plugins/</code> directory</p>
+
+<p><strong>2.</strong> Activate the plugin through the 'Plugins' menu in WordPress</p>
+
+<p><strong>3.</strong> Configure the plugin through the WordPress Move page under the 'Settings' menu</p>
+
+<p><strong>4.</strong> Start using the tools added under the 'Tools' menu</p>
+
+<h2>Frequently Asked Questions</h2>
+
+<p>** I am getting the "Could not activate the plugin because it generated a fatal error." error when I try to activate the plugin. Why? **</p>
+
+<p>WordPress Move needs php_sockets extension to be enabled, in order to work properly. If you are getting this error message, please enable php_sockets extension and restart your web server. Once you successfully enable the extension, you will be able to activate the plugin.</p>
+
+<p><strong>Do I need to install WordPress and WordPress Move on the new server as well, if I want to use WordPress Move for migration purposes?</strong></p>
+
+<p>Yes you do.</p>
+
+<p><strong>Is it possible to both migrate to another server and change the domain name?</strong></p>
+
+<p>Yes. You can choose whether you want to change your domain name or not on the migration screen. Note that it does not change the domain name used by the current installation, it just replaces instances of the old domain name with the new one on the fly while creating a database backup for migration.</p>
+
+<p><strong>Can I use WordPress Move to create backups of my installation?</strong></p>
+
+<p>Yes, you can. Click either "Create a Database Backup" button or "Create a Full Backup" button to create a backup. Your backup files will be stored under the backup directory. You can use Complete Migration mode whenever you want to use those files to revert to a former state of your installation.</p>
+
+<p><strong>Can I use WordPress Move to transfer my database backup only?</strong></p>
+
+<p>Yes, you can. All you need to do is selecting the Advanced Migration during the migration type selection page and not selecting any files when the file tree is displayed. Once you click the Start Migration button, the plugin will create a backup of your database only and transfer it to your new server. When you run WordPress Move on your new server in Complete Migration mode, the plugin will import the database backup created by your old WordPress installation.</p>
+
+<p><strong>Does WordPress Move take care of changing the whole domain name changing process?</strong></p>
+
+<p>No, it does not. WordPress Move just replaces instances of your old domain name in your database with the new domain name you provide. It is still your responsibility to point your domain name to the name servers used by your hosting company and make necessary configurations on the control panel provided by your hosting company. Before starting this process, please request assistance from your hosting company as some companies' systems erase all your data without creating backups when you change your domain name. Also, do not forget that it is always a good idea to have a backup of your files and the database before starting operations like these.</p>
+
+<p><strong>Plugin fails to create backup files because it says my backup directory is not writable. How can I fix this?</strong></p>
+
+<p>As the warning suggests, you need to make the backup directory writable by the plugin. Permission settings vary from server to server so there is no specific value to set the directory permissions to. The easiest way to fix this problem yourself is using an FTP client to alter permission settings of the backup directory until plugin successfully creates backup files. You may also prefer requesting assistance from your hosting company.</p>
+
+<p><strong>I am a pre-1.2 user, what will happen to the FTP Password that is already stored in my database?</strong></p>
+
+<p>Visiting the WordPress Move Settings page any time after updating the plugin will remove it from the database permanently.</p>
+
+<p><strong>Can I use the database backup files that WordPress Move generates with phpMyAdmin?</strong></p>
+
+<p>You can convert a database backup file using the Convert option in the Backup Manager to use it outside the plugin. So, yes, you can use the <em>converted</em> database backup files with phpMyAdmin or any other script.</p>
+
+<h2>Changelog</h2>
+
+<p><strong>1.3.1</strong></p>
+
+<ul>
+<li><p>Fixed several bugs.</p></li>
+<li><p>Improved the performance of the plugin in complex tasks.</p></li>
+<li><p>It is now possible to download a backup file by clicking on its name.</p></li>
+<li><p>If the Safe Mode is disabled, operations will not be interrupted by the maximum execution time error anymore.</p></li>
+</ul><p><strong>1.3</strong></p>
+
+<ul>
+<li><p>Explanation for Change Domain Name is rephrased.</p></li>
+<li><p>Simple and Advanced Migration methods are merged.</p></li>
+<li><p>Meta boxes are added to the migration page.</p></li>
+<li><p>A database backup converter is integrated to convert WordPress-Move-only database backup files to generic SQL files.</p></li>
+<li><p>Backup files to use for restoration can now be selected right on the Restore page.</p></li>
+<li><p>Messages are now displayed in real-time on migration and restoration pages.</p></li>
+<li><p>Empty HTML files are added to backup directories to prevent them being listed by people trying to access the directory via their browsers.</p></li>
+</ul><p><strong>1.2</strong></p>
+
+<ul>
+<li><p>FTP Passwords are no longer stored in the database, for security reasons. Visit the WordPress Move Settings page after updating the plugin to remove it from the database permanently.</p></li>
+<li><p>It is now possible to create either a full backup or a database backup, using Backup Manager.</p></li>
+<li><p>Fixed another PHP Catchable Fatal Error some people encounter.</p></li>
+<li><p>Plugin is now really able to check whether importing the database backup was successful or not.</p></li>
+<li><p>Explanations on the Migration Assistant page are replaced with more clear ones.</p></li>
+<li><p>Added meta boxes to the Migration Assistant.</p></li>
+</ul><p><strong>1.1.1</strong></p>
+
+<ul>
+<li><p>Transients are no longer included in database backups to reduce the database backup files' sizes.</p></li>
+<li><p>Backup files created before changing the domain name are now being stored under the old backup directory for a possible future need.</p></li>
+<li><p>Fixed the PHP Catchable Fatal Error some people encounter.</p></li>
+<li><p>Added meta boxes to the settings page.</p></li>
+</ul><p><strong>1.1</strong></p>
+
+<ul>
+<li><p>Added "Backup Now" functionality to Backup Manager.</p></li>
+<li><p>Added the capability of migrating and changing the domain name at the same time.</p></li>
+</ul><p><strong>1.0</strong></p>
+
+<ul>
+<li>Initial release.</li>
+</ul><h2>Upgrade Notice</h2>
+
+<p><strong>1.3.1</strong></p>
+
+<p>Performance has been improved and several bugs have been fixed. Also, if the Safe Mode is disabled, operations will not be interrupted by the maximum execution time error anymore.</p>
+
+<p><strong>1.3</strong></p>
+
+<p>Simple and Advanced Migration methods are merged and a database backup converter is integrated into the Backup Manager.</p>
+
+<p><strong>1.2</strong></p>
+
+<p>FTP Passwords are no longer stored in the database, for security reasons. It is now possible to create either a full backup or a database backup, using Backup Manager. Explanations on the Migration Assistant page are replaced with more clear ones.</p>
+
+<p><strong>1.1.1</strong></p>
+
+<p>Database backup files will be smaller now as transients will not be included in database backup files. Backup files created before changing the domain name are now being stored under the old backup directory for a possible future need. A small bug is fixed and meta boxes are added to the settings page of the plugin.</p>
+
+<p><strong>1.1</strong></p>
+
+<p>You can now create a full backup of your installation using the Backup Now button on the Backup Manager page. Also, migrating and changing the domain name at the same time is now supported.</p>
+
+<p><strong>1.0</strong></p>
+
+<p>Initial release.</p>
+        </section>
+
+        <footer>
+          WordPress Move is maintained by <a href="https://github.com/merty">merty</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+                  <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-40267731-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+      </div>
+    </div>
+  </body>
 </html>
