@@ -1,10 +1,11 @@
 <?php
 /*
-Plugin Name: WordPress Move
-Plugin URI: http://www.mertyazicioglu.com/wordpress-move/
-Description: WordPress Move is a migration assistant for WordPress that can take care of changing your domain name and/or moving your database and files to another server. After activating the plugin, please navigate to WordPress Move page under the Settings menu to configure it. Then, you can start using the Migration Assistant under the Tools menu.
+Plugin Name: WordPress Move - Multi-Tier Development Version
+Plugin URI: https://github.com/dylanhthomas/wordpress-move
+OLDPlugin URI: http://www.mertyazicioglu.com/wordpress-move/
+Description: This is a fork of the popular WordPress Move plugin, which is a migration assistant for Wordpress.  This version adds multiple target servers to facilitate a multi-tier development and review workflow without changing FTP settings at every step. After activating the plugin, please navigate to WordPress Move page under the Settings menu to configure it. Then, you can start using the Migration Assistant under the Tools menu.
 Version: 1.3.2
-Author: Mert Yazicioglu
+Author: Dylan Thomas (this version) / Mert Yazicioglu (Original)
 Author URI: http://www.mertyazicioglu.com
 License: GPL2
 */
@@ -99,7 +100,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 							$( "#wpmove_file_tree_buttons" ).css( 'display', 'block' );
 							$( "#wpmove_file_tree_check_all" ).click( function () {	$( "#wpmove_file_tree" ).jstree( "check_all" ); } );
 							$( "#wpmove_file_tree_uncheck_all" ).click( function () { $( "#wpmove_file_tree" ).jstree( "uncheck_all" );	} );
-							$( "#wpmove_file_tree" ).jstree( "check_all" );
+							//$( "#wpmove_file_tree" ).jstree( "check_all" );
 						}).jstree( {
 						 	"themes" : { "dots" : false	},
 							"types" : {	"valid_children" : [ "file" ], "types" : { "file" : { "icon" : { "image" : "<?php echo WPMOVE_URL; ?>/libs/js/themes/default/file.png" } } } },
@@ -345,6 +346,8 @@ if ( ! class_exists( 'WPMove' ) ) {
 
         function metabox_dev_settings( $wpmove_options ) {
 
+			$wpmove_options = $this->get_admin_options();
+
 			?>
 
             <table class="form-table">
@@ -448,7 +451,7 @@ if ( ! class_exists( 'WPMove' ) ) {
                                 <?php _e( 'URL', 'WPMove' ); ?>
                             </label>
                         </th>
-                        <td><input class="regular-text code" id="wpmove_ftp_staging_url" name="wpmove_staging_dev_url" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_staging_url'] ); ?>" />
+                        <td><input class="regular-text code" id="wpmove_ftp_staging_url" name="wpmove_ftp_staging_url" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_staging_url'] ); ?>" />
                             <i>
                             <?php _e( 'The url that will be set in Wordpress at the site/home/asset url.', 'WPMove' ); ?>
                             </i></td>
@@ -532,6 +535,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 		 * @return void
 		 */
         function metabox_production_settings( $wpmove_options ) {
+			$wpmove_options = $this->get_admin_options();
 
 			?>
 
@@ -806,7 +810,11 @@ if ( ! class_exists( 'WPMove' ) ) {
 					<br>
 				</div>
 				<div id="wpmove-ma-migrate-button" align="center">
-					<a class="button-primary" href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate' ) ); ?>"><?php _e( 'Begin', 'WPMove' ); ?></a>
+					<a class="button-primary" href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate&server=dev' ) ); ?>"><?php _e( 'Push to DEV', 'WPMove' ); ?></a><br /><br />
+					<a class="button-primary" href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate&server=staging' ) ); ?>"><?php _e( 'Push to STAGING', 'WPMove' ); ?></a><br /><br />
+					<a class="button-primary" href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate&server=production' ) ); ?>"><?php _e( 'Push to Production', 'WPMove' ); ?></a>
+
+
 				</div>
 			</div>
 			<?php
@@ -963,6 +971,11 @@ if ( ! class_exists( 'WPMove' ) ) {
 				}
 
 			} else {
+
+
+			$wpmove_options = $this->get_admin_options();
+			$server= sanitize_text_field($_GET['server']);
+
 			?>
 			<div class="wrap">
 				<div id="icon-tools" class="icon32">
@@ -989,7 +1002,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 									<label for="new_domain_name"><?php _e( 'New Domain Name', 'WPMove' ); ?></label>
 								</th>
 								<td>
-									<input class="regular-text code" id="new_domain_name" name="new_domain_name" type="text" value="<?php echo $wpmove_options['ftp_dev_url'];?>" />
+						    <input class="regular-text code" id="new_domain_name" name="new_domain_name" type="text" value="<?php echo $wpmove_options['ftp_'.$server.'_url'];?>" />
 								</td>
 							</tr>
 						</tbody>
@@ -1158,6 +1171,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 		 */
 		function metabox_ma_migrate_domain() {
 			$wpmove_options = $this->get_admin_options();
+			$server= sanitize_text_field($_GET['server']);
 
 			?>
 			<p>
@@ -1178,7 +1192,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 							<label for="new_domain_name"><?php _e( 'New Domain Name', 'WPMove' ); ?></label>
 						</th>
 						<td>
-						    <input class="regular-text code" id="new_domain_name" name="new_domain_name" type="text" value="<?php echo $wpmove_options['ftp_dev_url'];?>" />
+						    <input class="regular-text code" id="new_domain_name" name="new_domain_name" type="text" value="<?php echo $wpmove_options['ftp_'.$server.'_url'];?>" />
 						</td>
                     </tr>
                 </tbody>
@@ -1452,7 +1466,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 							<thead>
 								<tr>
 									<th scope="col" id="cb" class="manage-column column-cb check-column" style>
-										<input type="checkbox" checked>
+										<input type="checkbox">
 									</th>
 									<th scope="col" id="name" class="manage-column column-name" style>
 										<a href="#"><?php _e( 'Name', 'WPMove' ); ?></a>
@@ -1471,7 +1485,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 							<tfoot>
 								<tr>
 									<th scope="col" id="cb" class="manage-column column-cb check-column" style>
-										<input type="checkbox" checked>
+										<input type="checkbox">
 									</th>
 									<th scope="col" id="name" class="manage-column column-name" style>
 										<a href="#"><?php _e( 'Name', 'WPMove' ); ?></a>
@@ -1518,7 +1532,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 										// Display the row
 										echo '	<tr id="file-' . $i . '" valign="middle"' . $class . '>
 													<th scope="row" class="check-column">
-														<input id="file-' . $i . '" name="files[]" type="checkbox" value="' . $file . '" checked>
+														<input id="file-' . $i . '" name="files[]" type="checkbox" value="' . $file . '">
 													</th>
 													<td class="column-name">
 														<strong>
