@@ -1,12 +1,14 @@
 <?php
 /*
-Plugin Name: WordPress Move
-Plugin URI: http://www.mertyazicioglu.com/wordpress-move/
-Description: WordPress Move is a migration assistant for WordPress that can take care of changing your domain name and/or moving your database and files to another server. After activating the plugin, please navigate to WordPress Move page under the Settings menu to configure it. Then, you can start using the Migration Assistant under the Tools menu.
+Plugin Name: WordPress Move - Multi-Tier Development Version
+Plugin URI: https://github.com/dylanhthomas/wordpress-move
+OLDPlugin URI: http://www.mertyazicioglu.com/wordpress-move/
+Description: This is a fork of the popular WordPress Move plugin, which is a migration assistant for Wordpress.  This version adds multiple target servers to facilitate a multi-tier development and review workflow without changing FTP settings at every step. After activating the plugin, please navigate to WordPress Move page under the Settings menu to configure it. Then, you can start using the Migration Assistant under the Tools menu.
 Version: 1.3.2
-Author: Mert Yazicioglu
+Author: Dylan Thomas (this version) / Mert Yazicioglu (Original)
 Author URI: http://www.mertyazicioglu.com
 License: GPL2
+*/
 
 /*  Copyright 2011  Mert Yazicioglu  (email : mert@mertyazicioglu.com)
 
@@ -171,9 +173,10 @@ if ( ! class_exists( 'WPMove' ) ) {
 			wp_enqueue_script( 'postbox' );
 
 			// Add meta boxes to queue
-			add_meta_box( 'wpmove-dev-settings', __( 'Dev Settings', 'WPMove' ), array( $this, 'metabox_dev_settings' ), 'wpmove-settings' );
-			add_meta_box( 'wpmove-staging-settings', __( 'Staging Settings', 'WPMove' ), array( $this, 'metabox_staging_settings' ), 'wpmove-settings' );
-			add_meta_box( 'wpmove-production-settings', __( 'Production Settings', 'WPMove' ), array( $this, 'metabox_production_settings' ), 'wpmove-settings' );
+			add_meta_box( 'wpmove-dev-settings', __( 'Dev Settings', 'WPMove' ), array($this, 'metabox_settings'), 'wpmove-settings',$context = 'advanced', $priority = 'default', $callback_args='dev');
+			add_meta_box( 'wpmove-staging-settings', __( 'Staging Settings', 'WPMove' ), array($this, 'metabox_settings'), 'wpmove-settings',$context = 'advanced', $priority = 'default', $callback_args='staging');
+			add_meta_box( 'wpmove-production-settings', __( 'Production Settings', 'WPMove' ), array($this, 'metabox_settings'), 'wpmove-settings',$context = 'advanced', $priority = 'default', $callback_args='production');
+
 			add_meta_box( 'wpmove-db-backup-settings', __( 'Database Backup Settings', 'WPMove' ), array( $this, 'metabox_db_backup_settings' ), 'wpmove-settings' );
 			add_meta_box( 'wpmove-fs-backup-settings', __( 'File Backup Settings', 'WPMove' ), array( $this, 'metabox_fs_backup_settings' ), 'wpmove-settings' );
 
@@ -336,62 +339,62 @@ if ( ! class_exists( 'WPMove' ) ) {
 		}
 
 		/**
-		 * Callback function for the DEV Connection Details meta box.
+		 * Callback function for the Connection Details meta box.
 		 *
 		 * @param $wpmove_options Plugin settings array
 		 * @return void
 		 */
 
-        function metabox_dev_settings( $wpmove_options ) {
+        function metabox_settings( $wpmove_options, $metabox ) {
 
-			$wpmove_options = $this->get_admin_options();
+            $server=$metabox['args'];
 
 			?>
 
             <table class="form-table">
                 <tbody>
                     <tr valign="top">
-                        <th scope="row"><label for="wpmove_ftp_dev_url">
+                        <th scope="row"><label for="wpmove_ftp_<?php echo $server;?>_url">
                                 <?php _e( 'URL', 'WPMove' ); ?>
                             </label>
                         </th>
-                        <td><input class="regular-text code" id="wpmove_ftp_dev_url" name="wpmove_ftp_dev_url" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_dev_url'] ); ?>" />
+                        <td><input class="regular-text code" id="wpmove_ftp_<?php echo $server;?>_url" name="wpmove_ftp_<?php echo $server;?>_url" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_'.$server.'_url'] ); ?>" />
                             <i>
                             <?php _e( 'The url that will be set in Wordpress at the site/home/asset url.', 'WPMove' ); ?>
                             </i></td>
                     </tr>
 
-                        <th scope="row"><label for="wpmove_ftp_dev_hostname">
+                        <th scope="row"><label for="wpmove_ftp_<?php echo $server;?>_hostname">
                                 <?php _e( 'FTP Host', 'WPMove' ); ?>
                             </label>
                         </th>
-                        <td><input class="regular-text code" id="wpmove_ftp_dev_hostname" name="wpmove_ftp_dev_hostname" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_dev_hostname'] ); ?>" />
+                        <td><input class="regular-text code" id="wpmove_ftp_<?php echo $server;?>_hostname" name="wpmove_ftp_<?php echo $server;?>_hostname" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_'.$server.'_hostname'] ); ?>" />
                             <i>
                             <?php _e( 'The hostname you use to establish an FTP connection to the remote server. Might be an IP address or a domain name.', 'WPMove' ); ?>
                             </i></td>
                     </tr>
                     <tr valign="top">
-                        <th scope="row"><label for="wpmove_ftp_dev_port">
+                        <th scope="row"><label for="wpmove_ftp_<?php echo $server;?>_port">
                                 <?php _e( 'Port', 'WPMove' ); ?>
                             </label>
                         </th>
-                        <td><input id="wpmove_ftp_dev_port" name="wpmove_ftp_dev_port" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_dev_port'] ); ?>" size="5" />
+                        <td><input id="wpmove_ftp_<?php echo $server;?>_port" name="wpmove_ftp_<?php echo $server;?>_port" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_'.$server.'_port'] ); ?>" size="5" />
                             <i>
                             <?php _e( 'If you do not know what to write, it is most probably 21.', 'WPMove' ); ?>
                             </i></td>
                     </tr>
                     <tr valign="top">
-                        <th scope="row"><label for="wpmove_ftp_dev_username">
+                        <th scope="row"><label for="wpmove_ftp_<?php echo $server;?>_username">
                                 <?php _e( 'Username', 'WPMove' ); ?>
                             </label>
                         </th>
-                        <td><input class="regular-text" id="wpmove_ftp_dev_username" name="wpmove_ftp_dev_username" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_dev_username'] ); ?>" />
+                        <td><input class="regular-text" id="wpmove_ftp_<?php echo $server;?>_username" name="wpmove_ftp_<?php echo $server;?>_username" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_'.$server.'_username'] ); ?>" />
                             <i>
                             <?php _e( 'The username you use to establish an FTP connection to the remote server.', 'WPMove' ); ?>
                             </i></td>
                     </tr>
                     <tr valign="top">
-                        <th scope="row"><label for="wpmove_ftp_dev_password">
+                        <th scope="row"><label for="wpmove_ftp_<?php echo $server;?>_password">
                                 <?php _e( 'Password', 'WPMove' ); ?>
                             </label>
                         </th>
@@ -400,28 +403,28 @@ if ( ! class_exists( 'WPMove' ) ) {
                             </i></td>
                     </tr>
                     <tr valign="top">
-                        <th scope="row"><label for="wpmove_ftp_dev_remote_path">
+                        <th scope="row"><label for="wpmove_ftp_<?php echo $server;?>_remote_path">
                                 <?php _e( 'Remote Backup Path', 'WPMove' ); ?>
                             </label>
                         </th>
-                        <td><input class="regular-text code" id="wpmove_ftp_dev_remote_path" name="wpmove_ftp_dev_remote_path" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_dev_remote_path'] ); ?>" />
+                        <td><input class="regular-text code" id="wpmove_ftp_<?php echo $server;?>_remote_path" name="wpmove_ftp_<?php echo $server;?>_remote_path" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_'.$server.'_remote_path'] ); ?>" />
                             <i>
                             <?php _e( 'Path from the top directory that your FTP account has access to, to the backup directory of the WordPress2 Move plugin on the remote server. For instance:', 'WPMove' ); ?>
                             <code>/var/www/wp-content/plugins/wordpress-move2/backup/</code></i></td>
                     </tr>
                     <tr valign="top">
-                        <th scope="row"><label for="wpmove_ftp_dev_passive_mode">
+                        <th scope="row"><label for="wpmove_ftp_<?php echo $server;?>_passive_mode">
                                 <?php _e( 'Use Passive Mode', 'WPMove' ); ?>
                             </label>
                         </th>
                         <td><label title="enabled">
-                                <input type="radio" name="wpmove_ftp_dev_passive_mode" value="1" <?php if ( $wpmove_options['ftp_dev_passive_mode'] ) echo 'checked="checked"'; ?> />
+                                <input type="radio" name="wpmove_ftp_<?php echo $server;?>_passive_mode" value="1" <?php if ( $wpmove_options['ftp_'.$server.'_passive_mode'] ) echo 'checked="checked"'; ?> />
                                 <span style="font-size:11px;">
                                 <?php _e( 'Yes', 'WPMove' ); ?>
                                 </span> </label>
                             <br>
                             <label title="disabled">
-                                <input type="radio" name="wpmove_ftp_dev_passive_mode" value="0" <?php if ( ! $wpmove_options['ftp_dev_passive_mode'] ) echo 'checked="checked"'; ?> />
+                                <input type="radio" name="wpmove_ftp_<?php echo $server;?>_passive_mode" value="0" <?php if ( ! $wpmove_options['ftp_'.$server.'_passive_mode'] ) echo 'checked="checked"'; ?> />
                                 <span style="font-size:11px;">
                                 <?php _e( 'No', 'WPMove' ); ?>
                                 </span> </label></td>
@@ -432,194 +435,6 @@ if ( ! class_exists( 'WPMove' ) ) {
 
 		}
 
-		/**
-		 * Callback function for the STAGING Connection Details meta box.
-		 *
-		 * @param $wpmove_options Plugin settings array
-		 * @return void
-		 */
-		 function metabox_staging_settings( $wpmove_options ) {
-
-			?>
-
-            <table class="form-table">
-                <tbody>
-                    <tr valign="top">
-                        <th scope="row"><label for="wpmove_ftp_staging_url">
-                                <?php _e( 'URL', 'WPMove' ); ?>
-                            </label>
-                        </th>
-                        <td><input class="regular-text code" id="wpmove_ftp_staging_url" name="wpmove_ftp_staging_url" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_staging_url'] ); ?>" />
-                            <i>
-                            <?php _e( 'The url that will be set in Wordpress at the site/home/asset url.', 'WPMove' ); ?>
-                            </i></td>
-                    </tr>
-                    <tr valign="top">
-                        <th scope="row"><label for="wpmove_ftp_staging_hostname">
-                                <?php _e( 'FTP Host', 'WPMove' ); ?>
-                            </label>
-                        </th>
-                        <td><input class="regular-text code" id="wpmove_ftp_staging_hostname" name="wpmove_ftp_staging_hostname" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_staging_hostname'] ); ?>" />
-                            <i>
-                            <?php _e( 'The hostname you use to establish an FTP connection to the remote server. Might be an IP address or a domain name.', 'WPMove' ); ?>
-                            </i></td>
-                    </tr>
-                    <tr valign="top">
-                        <th scope="row"><label for="wpmove_ftp_staging_port">
-                                <?php _e( 'Port', 'WPMove' ); ?>
-                            </label>
-                        </th>
-                        <td><input id="wpmove_ftp_staging_port" name="wpmove_ftp_staging_port" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_staging_port'] ); ?>" size="5" />
-                            <i>
-                            <?php _e( 'If you do not know what to write, it is most probably 21.', 'WPMove' ); ?>
-                            </i></td>
-                    </tr>
-                    <tr valign="top">
-                        <th scope="row"><label for="wpmove_ftp_staging_username">
-                                <?php _e( 'Username', 'WPMove' ); ?>
-                            </label>
-                        </th>
-                        <td><input class="regular-text" id="wpmove_ftp_staging_username" name="wpmove_ftp_staging_username" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_staging_username'] ); ?>" />
-                            <i>
-                            <?php _e( 'The username you use to establish an FTP connection to the remote server.', 'WPMove' ); ?>
-                            </i></td>
-                    </tr>
-                    <tr valign="top">
-                        <th scope="row"><label for="wpmove_ftp_staging_password">
-                                <?php _e( 'Password', 'WPMove' ); ?>
-                            </label>
-                        </th>
-                        <td><i>
-                            <?php _e( 'You will be asked to enter your FTP Password you use to establish an FTP connection to the remote server, right before starting the migration process.', 'WPMove' ); ?>
-                            </i></td>
-                    </tr>
-                    <tr valign="top">
-                        <th scope="row"><label for="wpmove_ftp_staging_remote_path">
-                                <?php _e( 'Remote Backup Path', 'WPMove' ); ?>
-                            </label>
-                        </th>
-                        <td><input class="regular-text code" id="wpmove_ftp_staging_remote_path" name="wpmove_ftp_staging_remote_path" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_staging_remote_path'] ); ?>" />
-                            <i>
-                            <?php _e( 'Path from the top directory that your FTP account has access to, to the backup directory of the WordPress2 Move plugin on the remote server. For instance:', 'WPMove' ); ?>
-                            <code>/var/www/wp-content/plugins/wordpress-move2/backup/</code></i></td>
-                    </tr>
-                    <tr valign="top">
-                        <th scope="row"><label for="wpmove_ftp_staging_passive_mode">
-                                <?php _e( 'Use Passive Mode', 'WPMove' ); ?>
-                            </label>
-                        </th>
-                        <td><label title="enabled">
-                                <input type="radio" name="wpmove_ftp_staging_passive_mode" value="1" <?php if ( $wpmove_options['ftp_staging_passive_mode'] ) echo 'checked="checked"'; ?> />
-                                <span style="font-size:11px;">
-                                <?php _e( 'Yes', 'WPMove' ); ?>
-                                </span> </label>
-                            <br>
-                            <label title="disabled">
-                                <input type="radio" name="wpmove_ftp_staging_passive_mode" value="0" <?php if ( ! $wpmove_options['ftp_staging_passive_mode'] ) echo 'checked="checked"'; ?> />
-                                <span style="font-size:11px;">
-                                <?php _e( 'No', 'WPMove' ); ?>
-                                </span> </label></td>
-                    </tr>
-                </tbody>
-            </table>
-<?php
-
-		}
-
-		/**
-		 * Callback function for the PRODUCTION Connection Details meta box.
-		 *
-		 * @param $wpmove_options Plugin settings array
-		 * @return void
-		 */
-        function metabox_production_settings( $wpmove_options ) {
-			$wpmove_options = $this->get_admin_options();
-
-			?>
-
-            <table class="form-table">
-                <tbody>
-                    <tr valign="top">
-                        <th scope="row"><label for="wpmove_ftp_production_url">
-                                <?php _e( 'URL', 'WPMove' ); ?>
-                            </label>
-                        </th>
-                        <td><input class="regular-text code" id="wpmove_ftp_production_url" name="wpmove_ftp_production_url" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_production_url'] ); ?>" />
-                            <i>
-                            <?php _e( 'The url that will be set in Wordpress at the site/home/asset url.', 'WPMove' ); ?>
-                            </i></td>
-                    </tr>
-                    <tr valign="top">
-                        <th scope="row"><label for="wpmove_ftp_production_hostname">
-                                <?php _e( 'FTP Host', 'WPMove' ); ?>
-                            </label>
-                        </th>
-                        <td><input class="regular-text code" id="wpmove_ftp_production_hostname" name="wpmove_ftp_production_hostname" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_production_hostname'] ); ?>" />
-                            <i>
-                            <?php _e( 'The hostname you use to establish an FTP connection to the remote server. Might be an IP address or a domain name.', 'WPMove' ); ?>
-                            </i></td>
-                    </tr>
-                    <tr valign="top">
-                        <th scope="row"><label for="wpmove_ftp_production_port">
-                                <?php _e( 'Port', 'WPMove' ); ?>
-                            </label>
-                        </th>
-                        <td><input id="wpmove_ftp_production_port" name="wpmove_ftp_production_port" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_production_port'] ); ?>" size="5" />
-                            <i>
-                            <?php _e( 'If you do not know what to write, it is most probably 21.', 'WPMove' ); ?>
-                            </i></td>
-                    </tr>
-                    <tr valign="top">
-                        <th scope="row"><label for="wpmove_ftp_production_username">
-                                <?php _e( 'Username', 'WPMove' ); ?>
-                            </label>
-                        </th>
-                        <td><input class="regular-text" id="wpmove_ftp_production_username" name="wpmove_ftp_production_username" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_production_username'] ); ?>" />
-                            <i>
-                            <?php _e( 'The username you use to establish an FTP connection to the remote server.', 'WPMove' ); ?>
-                            </i></td>
-                    </tr>
-                    <tr valign="top">
-                        <th scope="row"><label for="wpmove_ftp_production_password">
-                                <?php _e( 'Password', 'WPMove' ); ?>
-                            </label>
-                        </th>
-                        <td><i>
-                            <?php _e( 'You will be asked to enter your FTP Password you use to establish an FTP connection to the remote server, right before starting the migration process.', 'WPMove' ); ?>
-                            </i></td>
-                    </tr>
-                    <tr valign="top">
-                        <th scope="row"><label for="wpmove_ftp_production_remote_path">
-                                <?php _e( 'Remote Backup Path', 'WPMove' ); ?>
-                            </label>
-                        </th>
-                        <td><input class="regular-text code" id="wpmove_ftp_production_remote_path" name="wpmove_ftp_production_remote_path" type="text" value="<?php echo esc_attr( $wpmove_options['ftp_production_remote_path'] ); ?>" />
-                            <i>
-                            <?php _e( 'Path from the top directory that your FTP account has access to, to the backup directory of the WordPress2 Move plugin on the remote server. For instance:', 'WPMove' ); ?>
-                            <code>/var/www/wp-content/plugins/wordpress-move2/backup/</code></i></td>
-                    </tr>
-                    <tr valign="top">
-                        <th scope="row"><label for="wpmove_ftp_production_passive_mode">
-                                <?php _e( 'Use Passive Mode', 'WPMove' ); ?>
-                            </label>
-                        </th>
-                        <td><label title="enabled">
-                                <input type="radio" name="wpmove_ftp_production_passive_mode" value="1" <?php if ( $wpmove_options['ftp_production_passive_mode'] ) echo 'checked="checked"'; ?> />
-                                <span style="font-size:11px;">
-                                <?php _e( 'Yes', 'WPMove' ); ?>
-                                </span> </label>
-                            <br>
-                            <label title="disabled">
-                                <input type="radio" name="wpmove_ftp_production_passive_mode" value="0" <?php if ( ! $wpmove_options['ftp_production_passive_mode'] ) echo 'checked="checked"'; ?> />
-                                <span style="font-size:11px;">
-                                <?php _e( 'No', 'WPMove' ); ?>
-                                </span> </label></td>
-                    </tr>
-                </tbody>
-            </table>
-<?php
-
-		}
 
 		/**
 		 * Callback function for the Database Backup Settings meta box.
@@ -810,7 +625,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 				<div id="wpmove-ma-migrate-button" align="center">
 					<a class="button-primary" href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate&server=dev' ) ); ?>"><?php _e( 'Push to DEV', 'WPMove' ); ?></a><br /><br />
 					<a class="button-primary" href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate&server=staging' ) ); ?>"><?php _e( 'Push to STAGING', 'WPMove' ); ?></a><br /><br />
-					<a class="button-primary" href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate&server=production' ) ); ?>"><?php _e( 'Push to PRODUCTION', 'WPMove' ); ?></a>
+					<a class="button-primary" href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate&server=production' ) ); ?>"><?php _e( 'Push to Production', 'WPMove' ); ?></a>
 
 
 				</div>
