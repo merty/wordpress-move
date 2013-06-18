@@ -1,14 +1,12 @@
 <?php
 /*
-Plugin Name: WordPress Move - Multi-Tier Development Version
-Plugin URI: https://github.com/dylanhthomas/wordpress-move
-OLDPlugin URI: http://www.mertyazicioglu.com/wordpress-move/
-Description: This is a fork of the popular WordPress Move plugin, which is a migration assistant for Wordpress.  This version adds multiple target servers to facilitate a multi-tier development and review workflow without changing FTP settings at every step. After activating the plugin, please navigate to WordPress Move page under the Settings menu to configure it. Then, you can start using the Migration Assistant under the Tools menu.
+Plugin Name: WordPress Move
+Plugin URI: http://www.mertyazicioglu.com/wordpress-move/
+Description: WordPress Move is a migration assistant for WordPress that can take care of changing your domain name and/or moving your database and files to another server. After activating the plugin, please navigate to WordPress Move page under the Settings menu to configure it. Then, you can start using the Migration Assistant under the Tools menu.
 Version: 1.3.2
-Author: Dylan Thomas (this version) / Mert Yazicioglu (Original)
+Author: Mert Yazicioglu
 Author URI: http://www.mertyazicioglu.com
 License: GPL2
-*/
 
 /*  Copyright 2011  Mert Yazicioglu  (email : mert@mertyazicioglu.com)
 
@@ -812,7 +810,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 				<div id="wpmove-ma-migrate-button" align="center">
 					<a class="button-primary" href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate&server=dev' ) ); ?>"><?php _e( 'Push to DEV', 'WPMove' ); ?></a><br /><br />
 					<a class="button-primary" href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate&server=staging' ) ); ?>"><?php _e( 'Push to STAGING', 'WPMove' ); ?></a><br /><br />
-					<a class="button-primary" href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate&server=production' ) ); ?>"><?php _e( 'Push to Production', 'WPMove' ); ?></a>
+					<a class="button-primary" href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate&server=production' ) ); ?>"><?php _e( 'Push to PRODUCTION', 'WPMove' ); ?></a>
 
 
 				</div>
@@ -1466,7 +1464,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 							<thead>
 								<tr>
 									<th scope="col" id="cb" class="manage-column column-cb check-column" style>
-										<input type="checkbox">
+										<input type="checkbox" checked>
 									</th>
 									<th scope="col" id="name" class="manage-column column-name" style>
 										<a href="#"><?php _e( 'Name', 'WPMove' ); ?></a>
@@ -1485,7 +1483,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 							<tfoot>
 								<tr>
 									<th scope="col" id="cb" class="manage-column column-cb check-column" style>
-										<input type="checkbox">
+										<input type="checkbox" checked>
 									</th>
 									<th scope="col" id="name" class="manage-column column-name" style>
 										<a href="#"><?php _e( 'Name', 'WPMove' ); ?></a>
