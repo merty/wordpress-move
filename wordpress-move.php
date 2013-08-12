@@ -2,8 +2,7 @@
 /*
 Plugin Name: WordPress Move - Multi-Tier Development Version
 Plugin URI: https://github.com/dylanhthomas/wordpress-move
-OLDPlugin URI: http://www.mertyazicioglu.com/wordpress-move/
-Description: This is a fork of the popular WordPress Move plugin, which is a migration assistant for Wordpress.  This version adds multiple target servers to facilitate a multi-tier development and review workflow without changing FTP settings at every step. After activating the plugin, please navigate to WordPress Move page under the Settings menu to configure it. Then, you can start using the Migration Assistant under the Tools menu.
+Description: This is a fork of the popular WordPress Move plugin (http://www.mertyazicioglu.com/wordpress-move/), which is a migration assistant for Wordpress.  This version adds multiple target servers to facilitate a multi-tier development and review workflow without changing FTP settings at every step. Additionally, a "Quick Deploy" option has been added for database-only transfers. After activating the plugin, please navigate to WordPress Move page under the Settings menu to configure it. Then, you can start using the Migration Assistant under the Tools menu.
 Version: 1.3.2
 Author: Dylan Thomas (this version) / Mert Yazicioglu (Original)
 Author URI: http://www.mertyazicioglu.com
@@ -140,6 +139,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 			add_meta_box( 'wpmove-ma-migrate-ftp', __( 'FTP Settings', 'WPMove' ), array( $this, 'metabox_ma_migrate_ftp' ), 'wpmove-ma-migrate' );
 			add_meta_box( 'wpmove-ma-migrate-domain', __( 'Change Domain Name (Optional)', 'WPMove' ), array( $this, 'metabox_ma_migrate_domain' ), 'wpmove-ma-migrate' );
 			add_meta_box( 'wpmove-ma-migrate-filetree', __( 'Files to Transfer', 'WPMove' ), array( $this, 'metabox_ma_migrate_filetree' ), 'wpmove-ma-migrate' );
+
 		}
 
 		/**
@@ -210,6 +210,8 @@ if ( ! class_exists( 'WPMove' ) ) {
 										   'ftp_dev_passive_mode'			=> 1,
 										   'ftp_dev_remote_path'			=> '/www/wp-content/plugins/wordpress-move/backup/',
 										   'ftp_dev_url'					=> 'http://dev.example.com',
+										   'ftp_dev_password'				=> 'password',
+
 
 										   'ftp_staging_hostname'			=> '',
 										   'ftp_staging_port'				=> 21,
@@ -217,6 +219,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 										   'ftp_staging_passive_mode'		=> 1,
 										   'ftp_staging_remote_path'		=> '/www/wp-content/plugins/wordpress-move/backup/',
 										   'ftp_staging_url'				=> 'http://staging.example.com',
+										   'ftp_staging_password'			=> 'password',
 
 										   'ftp_production_hostname'		=> '',
 										   'ftp_production_port'			=> 21,
@@ -224,6 +227,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 										   'ftp_production_passive_mode'	=> 1,
 										   'ftp_production_remote_path'		=> '/www/wp-content/plugins/wordpress-move/backup/',
 										   'ftp_production_url'				=> 'http://production.example.com',
+										   'ftp_production_password'		=> 'password',
 										 );
 
 			// Try retrieving options from the database
@@ -273,6 +277,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 				$wpmove_options['ftp_dev_passive_mode']         = intval( $_POST['wpmove_ftp_dev_passive_mode'] );
 				$wpmove_options['ftp_dev_remote_path']	        = sanitize_text_field( $_POST['wpmove_ftp_dev_remote_path'] );
 				$wpmove_options['ftp_dev_url']	                = sanitize_text_field( $_POST['wpmove_ftp_dev_url'] );
+				$wpmove_options['ftp_dev_password']	            = sanitize_text_field( $_POST['wpmove_ftp_dev_password'] );
 
 				$wpmove_options['ftp_staging_hostname']  	    = sanitize_text_field( $_POST['wpmove_ftp_staging_hostname'] );
 				$wpmove_options['ftp_staging_port'] 	 	    = intval( $_POST['wpmove_ftp_staging_port'] );
@@ -280,6 +285,7 @@ if ( ! class_exists( 'WPMove' ) ) {
 				$wpmove_options['ftp_staging_passive_mode']     = intval( $_POST['wpmove_ftp_staging_passive_mode'] );
 				$wpmove_options['ftp_staging_remote_path']	    = sanitize_text_field( $_POST['wpmove_ftp_staging_remote_path'] );
 				$wpmove_options['ftp_staging_url']	            = sanitize_text_field( $_POST['wpmove_ftp_staging_url'] );
+				$wpmove_options['ftp_staging_password']	        = sanitize_text_field( $_POST['wpmove_ftp_staging_password'] );
 
 				$wpmove_options['ftp_production_hostname']  	= sanitize_text_field( $_POST['wpmove_ftp_production_hostname'] );
 				$wpmove_options['ftp_production_port'] 	 	    = intval( $_POST['wpmove_ftp_production_port'] );
@@ -287,6 +293,8 @@ if ( ! class_exists( 'WPMove' ) ) {
 				$wpmove_options['ftp_production_passive_mode']  = intval( $_POST['wpmove_ftp_production_passive_mode'] );
 				$wpmove_options['ftp_production_remote_path']	= sanitize_text_field( $_POST['wpmove_ftp_production_remote_path'] );
 				$wpmove_options['ftp_production_url']	        = sanitize_text_field( $_POST['wpmove_ftp_production_url'] );
+				$wpmove_options['ftp_production_password']	    = sanitize_text_field( $_POST['wpmove_ftp_production_password'] );
+
 
 				// Update plugin settings
 				update_option( $this->admin_options_name, $wpmove_options );
@@ -398,7 +406,8 @@ if ( ! class_exists( 'WPMove' ) ) {
                                 <?php _e( 'Password', 'WPMove' ); ?>
                             </label>
                         </th>
-                        <td><i>
+                         <td><input class="regular-text" id="wpmove_ftp_<?php echo $server;?>_password" name="wpmove_ftp_<?php echo $server;?>_password" type="password" value="<?php echo esc_attr( $wpmove_options['ftp_'.$server.'_password'] ); ?>" />
+                            <i>
                             <?php _e( 'You will be asked to enter your FTP Password you use to establish an FTP connection to the remote server, right before starting the migration process.', 'WPMove' ); ?>
                             </i></td>
                     </tr>
@@ -509,6 +518,10 @@ if ( ! class_exists( 'WPMove' ) ) {
 										break;
 					case 'migrate':		$this->print_migration_page();
 										break;
+
+					case 'quick-migrate':		$this->print_quick_migration_page();
+										break;
+
 					case 'complete':	$this->print_complete_migration_page();
 										break;
 				}
@@ -623,11 +636,37 @@ if ( ! class_exists( 'WPMove' ) ) {
 					<br>
 				</div>
 				<div id="wpmove-ma-migrate-button" align="center">
+				    <h2>Files and DB - With Options</h2>
 					<a class="button-primary" href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate&server=dev' ) ); ?>"><?php _e( 'Push to DEV', 'WPMove' ); ?></a><br /><br />
 					<a class="button-primary" href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate&server=staging' ) ); ?>"><?php _e( 'Push to STAGING', 'WPMove' ); ?></a><br /><br />
 					<a class="button-primary" href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=migrate&server=production' ) ); ?>"><?php _e( 'Push to Production', 'WPMove' ); ?></a>
 
+					<br /><br />
+					<h2>DB Only - No Options</h2>
+					<strong>DB will be immediately uploaded (but not published)</strong>
 
+
+					<style type="text/css">
+
+					a.quick{
+                        border: none !important;
+                        width: 275px !important;
+                        padding: 15px !important;
+                        height: auto !important;
+                        font-size: 18px !important;
+                    }
+
+                    .dev{background: #F00 !important;}
+                    .staging{background: yellow !important; color: black !important;}
+                    .production{background: green !important;}
+
+					</style>
+
+					<a class="button-primary quick dev" href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=quick-migrate&server=dev') ); ?>"><?php _e( 'QUICK --> Dev', 'WPMove' ); ?></a><br /><br />
+            		<a class="button-primary quick staging" href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=quick-migrate&server=staging') ); ?>"><?php _e( 'QUICK --> Staging', 'WPMove' ); ?></a><br /><br />
+			    	<a class="button-primary quick production" href="<?php echo esc_url( admin_url( 'tools.php?page=wpmove&do=quick-migrate&server=production') ); ?>"><?php _e( 'QUICK --> Production', 'WPMove' ); ?></a><br /><br />
+						</td>
+                    </tr>
 				</div>
 			</div>
 			<?php
@@ -957,6 +996,90 @@ if ( ! class_exists( 'WPMove' ) ) {
 			}
 		}
 
+
+/**
+		 * Handles the advanced migration process.
+		 *
+		 * @param void
+		 * @return void
+		 */
+		function print_quick_migration_page() {
+
+			// Load plugin settings
+
+
+			$wpmove_options = $this->get_admin_options();
+
+			$server= sanitize_text_field($_GET['server']);
+
+			$ftp_password = $wpmove_options['ftp_'.$server.'_password'];
+
+
+					// Create an array to hold backup files that will be uploaded
+					$backups = array();
+
+						// Apply filters to the given domain names
+						$old_domain_name = home_url();
+						$new_domain_name = $wpmove_options['ftp_'.$server.'_url'];
+
+						// Create a backup of the database by changing instances of the old domain name with the newer one
+						$db_backups = wpmove_create_db_backup( $wpmove_options['db_chunk_size'], 1, $old_domain_name, $new_domain_name );
+
+
+					// Add names of database backup files to the array of backup files
+				 	$backups = array_merge( $backups, $db_backups );
+
+					// Check whether an array is actually posted or not
+					if ( isset( $_POST['files'] ) && is_array( $_POST['files'] ) ) {
+
+				 	 	// Use the POST data directly, if the fallback method is being used
+				 	 	$files = array_map( 'sanitize_text_field', $_POST['files'] );
+
+				 	 	// Remove non-empty directories from the array
+				 	 	$files = array_filter( $files );
+
+					 	// Create chunks from the selected files
+					 	$chunks = wpmove_divide_into_chunks( $files, $wpmove_options['fs_chunk_size'] );
+
+					 	// To prevent overwriting archives created in the same second
+					 	$chunk_id = 1;
+
+					 	// Create an archive of the each chunk
+					 	foreach ( $chunks as $chunk )
+					 		array_push( $backups, wpmove_create_archive( $chunk, ABSPATH, $chunk_id++ ) );
+					}
+
+					// Check whether creating backups files succeeded or not
+				 	if ( ! file_exists( trailingslashit( WPMOVE_BACKUP_DIR ) . $backups['0'] ) ) {
+				 		_e( 'Could not create backup files. Please make sure the backup directory is writable. For further info, please refer to the documentation.', 'WPMove' );
+				 	} else {
+
+						// Upload files and display a success message on success
+						if ( $this->upload_files( $backups, sanitize_text_field( $ftp_password ) ) ) {
+
+						?>
+						<br>
+						<?php _e( '<h2>The database has been uploaded to <span style="text-transform: uppercase;">'.$server.'</span>.<br /><a target="_blank" href="'.$wpmove_options['ftp_'.$server.'_url'].'/wp-admin/tools.php?page=wpmove&do=complete">Log in to <span style="text-transform: uppercase;">'.$server.'</span></a> to complete migration.</h2>', 'WPMove' ); ?>
+					</p>
+				</div>
+						<?php
+
+						} else {
+
+						?>
+						<br>
+						<?php _e( 'Please check your FTP connection details on the settings page.', 'WPMove' ); ?>
+					</p>
+				</div>
+						<?php
+
+						}
+					}
+
+		}
+
+
+
 		/**
 		 * Callback function for the Migration FTP Settings meta box.
 		 *
@@ -964,12 +1087,13 @@ if ( ! class_exists( 'WPMove' ) ) {
 		 * @return void
 		 */
 		function metabox_ma_migrate_ftp() {
-
+            $wpmove_options = $this->get_admin_options();
+			$server= sanitize_text_field($_GET['server']);
 			?>
 			<p>
-				<?php _e( 'If your FTP account uses a password, please enter it below.', 'WPMove' ); ?><br>
+				<?php _e( 'If your FTP account uses a password, please enter it below. It is prefilled with the password you set in "Settings"', 'WPMove' ); ?><br>
 				<blockquote>
-					<b><?php _e( 'FTP Password:', 'WPMove' ); ?></b> <input id="ftp_password" name="ftp_password" type="password" /><br>
+					<b><?php _e( 'FTP Password:', 'WPMove' ); ?></b> <input id="ftp_password" name="ftp_password" type="password" value="<?php echo $wpmove_options['ftp_'.$server.'_password'];?>" /><br>
 				</blockquote>
 			</p>
 			<?php
