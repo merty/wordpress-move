@@ -25,7 +25,7 @@ Installation
 Frequently Asked Questions
 ----------------------
 
-** I am getting the "Could not activate the plugin because it generated a fatal error." error when I try to activate the plugin. Why? **
+**I am getting the "Could not activate the plugin because it generated a fatal error." error when I try to activate the plugin. Why?**
 
 WordPress Move needs php_sockets extension to be enabled, in order to work properly. If you are getting this error message, please enable php_sockets extension and restart your web server. Once you successfully enable the extension, you will be able to activate the plugin.
 
