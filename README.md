@@ -136,6 +136,7 @@ Upgrade Notice
 ------------
 
 **1.3.2**
+
 The bug that was causing problems with other plugins has been fixed. Previous releases were omitting NULL fields and causing data loss as a result.
 
 **1.3.1**
