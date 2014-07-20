@@ -135,6 +135,9 @@ Changelog
 Upgrade Notice
 ------------
 
+**1.3.2**
+The bug that was causing problems with other plugins has been fixed. Previous releases were omitting NULL fields and causing data loss as a result.
+
 **1.3.1**
 
 Performance has been improved and several bugs have been fixed. Also, if the Safe Mode is disabled, operations will not be interrupted by the maximum execution time error anymore.
