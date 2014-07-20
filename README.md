@@ -64,6 +64,10 @@ You can convert a database backup file using the Convert option in the Backup Ma
 Changelog
 --------
 
+**1.3.2**
+
+* Fixed the bug causing problems with other plugins such as Gravity Forms.
+
 **1.3.1**
 
 * Fixed several bugs.
