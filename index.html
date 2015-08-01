@@ -1,47 +1,47 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>WordPress Move by merty</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+
+    <title>WordPress Move by merty</title>
   </head>
+
   <body>
-    <div class="wrapper">
-      <header>
+    <header>
+      <div class="inner">
         <h1>WordPress Move</h1>
-        <p>WordPress Move is a migration assistant for WordPress that is capable of changing the domain name in use or migrating your installation to another server either as is or based on your choices.</p>
+        <h2>WordPress Move is a migration assistant for WordPress that is capable of changing the domain name in use or migrating your installation to another server either as is or based on your choices.</h2>
+        <a href="https://github.com/merty/wordpress-move" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
 
-        <p class="view"><a href="https://github.com/merty/wordpress-move">View the Project on GitHub <small>merty/wordpress-move</small></a></p>
-
-
-        <ul>
-          <li><a href="https://github.com/merty/wordpress-move/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/merty/wordpress-move/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/merty/wordpress-move">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <h1>
-<a name="wordpress-move" class="anchor" href="#wordpress-move"><span class="octicon octicon-link"></span></a>WordPress Move</h1>
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a id="wordpress-move" class="anchor" href="#wordpress-move" aria-hidden="true"><span class="octicon octicon-link"></span></a>WordPress Move</h1>
 
 <p>WordPress Move enables you to back up your installation to restore to at any time, change the domain name in use and migrate your installation to another server.</p>
 
 <h2>
-<a name="description" class="anchor" href="#description"><span class="octicon octicon-link"></span></a>Description</h2>
+<a id="description" class="anchor" href="#description" aria-hidden="true"><span class="octicon octicon-link"></span></a>Description</h2>
 
 <p>WordPress Move is a migration assistant for WordPress that is capable of changing the domain name in use and/or migrating your installation to another server either as is or based on your choices. In addition to these, you can use WordPress Move to transfer your database or create backups of your installation. For further information on using the plugin, please refer to the documentation provided with the plugin.</p>
 
 <p><strong>Disclaimer:</strong> Even though this plugin is heavily tested, please use it at your own risk and do not forget to back up your files beforehand.</p>
 
 <h2>
-<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
 
 <p><strong>1.</strong> Upload <code>wordpress-move</code> to the <code>/wp-content/plugins/</code> directory</p>
 
@@ -52,9 +52,9 @@
 <p><strong>4.</strong> Start using the tools added under the 'Tools' menu</p>
 
 <h2>
-<a name="frequently-asked-questions" class="anchor" href="#frequently-asked-questions"><span class="octicon octicon-link"></span></a>Frequently Asked Questions</h2>
+<a id="frequently-asked-questions" class="anchor" href="#frequently-asked-questions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Frequently Asked Questions</h2>
 
-<p><strong>I am getting the "Could not activate the plugin because it generated a fatal error." error when I try to activate the plugin. Why?</strong></p>
+<p>** I am getting the "Could not activate the plugin because it generated a fatal error." error when I try to activate the plugin. Why? **</p>
 
 <p>WordPress Move needs php_sockets extension to be enabled, in order to work properly. If you are getting this error message, please enable php_sockets extension and restart your web server. Once you successfully enable the extension, you will be able to activate the plugin.</p>
 
@@ -91,12 +91,8 @@
 <p>You can convert a database backup file using the Convert option in the Backup Manager to use it outside the plugin. So, yes, you can use the <em>converted</em> database backup files with phpMyAdmin or any other script.</p>
 
 <h2>
-<a name="changelog" class="anchor" href="#changelog"><span class="octicon octicon-link"></span></a>Changelog</h2>
+<a id="changelog" class="anchor" href="#changelog" aria-hidden="true"><span class="octicon octicon-link"></span></a>Changelog</h2>
 
-<p><strong>1.3.2</strong></p>
-<ul>
-<li><p>Fixed the bug causing problems with other plugins such as Gravity Forms.</p></li>
-</ul>
 <p><strong>1.3.1</strong></p>
 
 <ul>
@@ -104,7 +100,9 @@
 <li><p>Improved the performance of the plugin in complex tasks.</p></li>
 <li><p>It is now possible to download a backup file by clicking on its name.</p></li>
 <li><p>If the Safe Mode is disabled, operations will not be interrupted by the maximum execution time error anymore.</p></li>
-</ul><p><strong>1.3</strong></p>
+</ul>
+
+<p><strong>1.3</strong></p>
 
 <ul>
 <li><p>Explanation for Change Domain Name is rephrased.</p></li>
@@ -114,7 +112,9 @@
 <li><p>Backup files to use for restoration can now be selected right on the Restore page.</p></li>
 <li><p>Messages are now displayed in real-time on migration and restoration pages.</p></li>
 <li><p>Empty HTML files are added to backup directories to prevent them being listed by people trying to access the directory via their browsers.</p></li>
-</ul><p><strong>1.2</strong></p>
+</ul>
+
+<p><strong>1.2</strong></p>
 
 <ul>
 <li><p>FTP Passwords are no longer stored in the database, for security reasons. Visit the WordPress Move Settings page after updating the plugin to remove it from the database permanently.</p></li>
@@ -123,28 +123,32 @@
 <li><p>Plugin is now really able to check whether importing the database backup was successful or not.</p></li>
 <li><p>Explanations on the Migration Assistant page are replaced with more clear ones.</p></li>
 <li><p>Added meta boxes to the Migration Assistant.</p></li>
-</ul><p><strong>1.1.1</strong></p>
+</ul>
+
+<p><strong>1.1.1</strong></p>
 
 <ul>
 <li><p>Transients are no longer included in database backups to reduce the database backup files' sizes.</p></li>
 <li><p>Backup files created before changing the domain name are now being stored under the old backup directory for a possible future need.</p></li>
 <li><p>Fixed the PHP Catchable Fatal Error some people encounter.</p></li>
 <li><p>Added meta boxes to the settings page.</p></li>
-</ul><p><strong>1.1</strong></p>
+</ul>
+
+<p><strong>1.1</strong></p>
 
 <ul>
 <li><p>Added "Backup Now" functionality to Backup Manager.</p></li>
 <li><p>Added the capability of migrating and changing the domain name at the same time.</p></li>
-</ul><p><strong>1.0</strong></p>
+</ul>
+
+<p><strong>1.0</strong></p>
 
 <ul>
 <li>Initial release.</li>
-</ul><h2>
-<a name="upgrade-notice" class="anchor" href="#upgrade-notice"><span class="octicon octicon-link"></span></a>Upgrade Notice</h2>
+</ul>
 
-<p><strong>1.3.2</strong></p>
-
-<p>The bug that was causing problems with other plugins has been fixed. Previous releases were omitting NULL fields and causing data loss as a result.</p>
+<h2>
+<a id="upgrade-notice" class="anchor" href="#upgrade-notice" aria-hidden="true"><span class="octicon octicon-link"></span></a>Upgrade Notice</h2>
 
 <p><strong>1.3.1</strong></p>
 
@@ -169,14 +173,26 @@
 <p><strong>1.0</strong></p>
 
 <p>Initial release.</p>
-      </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/merty">merty</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/merty/wordpress-move/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/merty/wordpress-move/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/merty/wordpress-move"></a> is maintained by <a href="https://github.com/merty">merty</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
     </div>
-    <script src="javascripts/scale.fix.js"></script>
-              <script type="text/javascript">
+
+            <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
